@@ -36,9 +36,9 @@ int checaparada(void);
 void mostrapop(void);
 
 int i_geraativa = 0; //geracao atual
-void * m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromossomos
+posicao * m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromossomos
 int m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
-void * indice_notas[TAMCROMO];
+posicao * * indice_notas[TAMCROMO];
 float m_f_estataval[QTGERA][3]; //matriz de estatisticas: fitness m�nimo, m�ximo, m�dio
 int i_pai1; //primeiro pai selecionado
 int i_pai2; //segundo pai selecionado
@@ -141,11 +141,10 @@ void avaliapop(void) {
             else
                 m_f_popaval[i_geraativa][j] += dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);
         }
-        indice_notas[j] = &m_i_pop[i_geraativa][j][0];
+        indice_notas[j] = &(m_i_pop[i_geraativa][j][0]);
         soma_pesos += m_f_popaval[i_geraativa][j];
-        void * v = indice_notas[j];
-        posicao * p = (posicao*) *v;
-        printf("[Cromo %d, dado= %d] peso= %d\n", j + 1, p->dado, m_f_popaval[i_geraativa][j]);
+        printf("[Cromo %d, dado= %d] peso= %d\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+        //exit(1);
     }
 
      printf("\npesos totais %f\n", soma_pesos);
@@ -169,17 +168,12 @@ void ordenar_cromo(int v[][TAMPOP])
 		v[i_geraativa][i + 1] = x;
 		indice_notas[i + 1] = p;
 	}
-
-	for(i = 0; i < TAMPOP; i++) {
-        printf("END: %p, dado= %d, peso= %d\n", (void *)&indice_notas[i], indice_notas[i]->dado, v[i_geraativa][i]);
-	}
-	exit(1);
 }
-void pos_cromo(posicao * cromo, int g, int * j)
+void pos_cromo(posicao * * cromo, int g, int * j)
 {
     int i;
     for(i = 0; i < TAMPOP; i++) {
-        posicao * pos  = (posicao *) m_i_pop[g][i][0];
+        posicao ** pos  = &m_i_pop[g][i][0];
         if(pos == cromo) {
             *j = i;
              return;
