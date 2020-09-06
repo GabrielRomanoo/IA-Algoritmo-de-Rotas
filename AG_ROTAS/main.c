@@ -53,7 +53,7 @@ pesos_pop pesos_cromo_pop[TAMPOP];
 void init_mapa(void);
 void print_mapa(void);
 void testa_cria();
-int dis(posicao inicio, posicao atual);
+int dis(posicao * inicio, posicao * atual);
 
 posicao matriz[LIN][COL];
 
@@ -91,13 +91,13 @@ void init_mapa()
 
 void testa_cria()
 {
-    printf("\n\nTestando primeira ciracao\n");
+    printf("\n\nTestando primeira geracao\n");
     int i, j, k;
     for(i = 0; i < 1; i++) {
         for(j = 0; j < 2; j++) {
             for(k = 0; k < TAMCROMO; k++) {
             posicao * pos =  (posicao *) m_i_pop[i][j][k];
-            printf("[%d(%d, %d)], ",  pos->dado, pos->linha, pos->col);
+            printf("[%d](%d, %d),\n",  pos->dado, pos->linha, pos->col);
             }
             printf("\n");
         }
@@ -134,32 +134,49 @@ void avaliapop(void) {
     //posicao * pos = (posicao *)m_i_pop[i][j][k];
     //debug(inicio, *pos);
     for(i = 0; i < i_geraativa; i++) {
-        for(j = 0; i < TAMPOP; j++) {
+        for(j = 0; j < 2; j++) {
+            pesos_cromo_pop[j].cromo = m_i_pop[i][j][0]; //cromo-init
+            posicao * pos = pesos_cromo_pop[j].cromo;
             for(k = 0;  k < TAMCROMO; k++){
                 if(k == 0) {
-
-                	pesos_cromo_pop[j].cromo = m_i_pop[i][j][k];
-                	posicao * pos = pesos_cromo_pop[j].cromo;
-                	pesos_cromo_pop[j].peso_cromo[k] = dis(inicio, *pos);
-                	debug(inicio, pesos_cromo_pop[j].cromo);
-                	printf("\ndistancia %d\n", pesos_cromo_pop[j].peso_cromo[k]);
-                	exit(1);
+                	pesos_cromo_pop[j].peso_cromo[k] = dis(&inicio, pos);
+                	//debug(inicio, pesos_cromo_pop[j].cromo);
+                	//printf("\ndistancia %d\n", pesos_cromo_pop[j].peso_cromo[k]);
+                    //exit(1);
                 }
+                else pesos_cromo_pop[j].peso_cromo[k] = dis(m_i_pop[i][j][k - 1], m_i_pop[i][j][k]);
             }
         }
+         //exit(2);
+        teste_gera();
     }
 	return;
 }
 
-void debug(posicao p1, posicao p2)
+void teste_gera()
 {
-    printf("[%d(%d, %d)], [%d(%d, %d)], dist = %d", p1.dado, p1.linha, p1.col, p2.dado, p2.linha, p2.col, dis(p1, p2));
+    int i, j, k;
+    for(i = 0; i < 1; i++) {
+        for(j = 0; j < 2; j++) {
+            for(k = 0; k < TAMCROMO; k++) {
+                posicao * pos  = (posicao *) m_i_pop[i][j][k];
+                printf("[%d]- peso = %d\n", pos->dado ,pesos_cromo_pop[j].peso_cromo[k]);
+
+            }
+        }
+    }
+    exit(1);
 }
 
-int dis(posicao inicio, posicao atual)
+void debug(posicao p1, posicao p2)
 {
-    int lin = (inicio.linha - atual.linha) * (inicio.linha - atual.linha);
-    int col = (inicio.col - atual.col) * (inicio.col - atual.col);
+    printf("[%d(%d, %d)], [%d(%d, %d)], dist = %d", p1.dado, p1.linha, p1.col, p2.dado, p2.linha, p2.col, dis(&p1, &p2));
+}
+
+int dis(posicao * inicio, posicao * atual)
+{
+    int lin = (inicio->linha - atual->linha) * (inicio->linha - atual->linha);
+    int col = (inicio->col - atual->col) * (inicio->col - atual->col);
     return lin + col;
 }
 
