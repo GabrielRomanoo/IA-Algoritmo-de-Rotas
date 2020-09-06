@@ -6,7 +6,7 @@
 #define FALSE 0
 
 #define QTGERA 1000
-#define TAMPOP 100
+#define TAMPOP 60
 #define TAMCROMO 30
 #define TAXASEL 0.80
 #define TAXACRUZ 0.90
@@ -36,8 +36,9 @@ int checaparada(void);
 void mostrapop(void);
 
 int i_geraativa = 0; //geracao atual
-void * m_i_pop[QTGERA][TAMPOP][TAMCROMO]; //matriz de cromossomos
-float m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
+void * m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromossomos
+int m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
+void * indice_notas[TAMCROMO];
 float m_f_estataval[QTGERA][3]; //matriz de estatisticas: fitness m�nimo, m�ximo, m�dio
 int i_pai1; //primeiro pai selecionado
 int i_pai2; //segundo pai selecionado
@@ -54,6 +55,7 @@ void init_mapa(void);
 void print_mapa(void);
 void testa_cria();
 int dis(posicao * inicio, posicao * atual);
+void teste_gera(float total);
 
 posicao matriz[LIN][COL];
 
@@ -61,7 +63,7 @@ int main(void) {
 
 	srand(time(NULL));
 	init_mapa();
-	print_mapa();
+	//print_mapa();
 
 
 	criapop();
@@ -94,10 +96,10 @@ void testa_cria()
     printf("\n\nTestando primeira geracao\n");
     int i, j, k;
     for(i = 0; i < 1; i++) {
-        for(j = 0; j < 2; j++) {
+        for(j = 0; j < TAMPOP; j++) {
             for(k = 0; k < TAMCROMO; k++) {
-            posicao * pos =  (posicao *) m_i_pop[i][j][k];
-            printf("[%d](%d, %d),\n",  pos->dado, pos->linha, pos->col);
+                posicao * pos =  (posicao *) m_i_pop[i][j][k];
+                printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
             }
             printf("\n");
         }
@@ -119,51 +121,86 @@ void print_mapa()
 void criapop(void) {
     int i, j, k;
     for(i = 0; i < 1; i++) {
-        for(j = 0; j < 2; j++) {
+        for(j = 0; j < TAMPOP; j++) {
             for(k = 0; k < TAMCROMO; k++) {
                 m_i_pop[i][j][k] = &matriz[rand() % (LIN - 1)][rand() % (COL - 1)];
             }
         }
     }
-    ++i_geraativa;
 	return;
 }
 
 void avaliapop(void) {
-    int i, j, k, v;
-    //posicao * pos = (posicao *)m_i_pop[i][j][k];
-    //debug(inicio, *pos);
-    for(i = 0; i < i_geraativa; i++) {
-        for(j = 0; j < 2; j++) {
-            pesos_cromo_pop[j].cromo = m_i_pop[i][j][0]; //cromo-init
-            posicao * pos = pesos_cromo_pop[j].cromo;
-            for(k = 0;  k < TAMCROMO; k++){
-                if(k == 0) {
-                	pesos_cromo_pop[j].peso_cromo[k] = dis(&inicio, pos);
-                	//debug(inicio, pesos_cromo_pop[j].cromo);
-                	//printf("\ndistancia %d\n", pesos_cromo_pop[j].peso_cromo[k]);
-                    //exit(1);
-                }
-                else pesos_cromo_pop[j].peso_cromo[k] = dis(m_i_pop[i][j][k - 1], m_i_pop[i][j][k]);
-            }
+    int j, k, i = 0;
+    float soma_pesos = 0;
+    for(j = 0; j < TAMPOP; j++) {
+        posicao * pos = m_i_pop[i_geraativa][j][0]; //cromo-init
+        for(k = 0;  k < TAMCROMO; k++){
+            if(k == 0)
+                m_f_popaval[i_geraativa][j] += dis(&inicio, pos);
+            else
+                m_f_popaval[i_geraativa][j] += dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);
         }
-         //exit(2);
-        teste_gera();
+        indice_notas[j] = &m_i_pop[i_geraativa][j][0];
+        soma_pesos += m_f_popaval[i_geraativa][j];
+        void * v = indice_notas[j];
+        posicao * p = (posicao*) *v;
+        printf("[Cromo %d, dado= %d] peso= %d\n", j + 1, p->dado, m_f_popaval[i_geraativa][j]);
     }
-	return;
+
+     printf("\npesos totais %f\n", soma_pesos);
+     ordenar_cromo(m_f_popaval);
+    //exit(2);
+    teste_gera(soma_pesos);
+    i_geraativa += 1;
 }
 
-void teste_gera()
+void ordenar_cromo(int v[][TAMPOP])
 {
-    int i, j, k;
-    for(i = 0; i < 1; i++) {
-        for(j = 0; j < 2; j++) {
-            for(k = 0; k < TAMCROMO; k++) {
-                posicao * pos  = (posicao *) m_i_pop[i][j][k];
-                printf("[%d]- peso = %d\n", pos->dado ,pesos_cromo_pop[j].peso_cromo[k]);
+    int i, j, x;
+    posicao * p;
+	for (j = 1; j < TAMPOP; ++j) {
+		x = v[i_geraativa][j];
+		p = indice_notas[j];
+		for (i = j - 1; i >= 0 && v[i_geraativa][i] > x; --i){
+            v[i_geraativa][i + 1] = v[i_geraativa][i];
+            indice_notas[i + 1] = indice_notas[i];
+		}
+		v[i_geraativa][i + 1] = x;
+		indice_notas[i + 1] = p;
+	}
 
-            }
+	for(i = 0; i < TAMPOP; i++) {
+        printf("END: %p, dado= %d, peso= %d\n", (void *)&indice_notas[i], indice_notas[i]->dado, v[i_geraativa][i]);
+	}
+	exit(1);
+}
+void pos_cromo(posicao * cromo, int g, int * j)
+{
+    int i;
+    for(i = 0; i < TAMPOP; i++) {
+        posicao * pos  = (posicao *) m_i_pop[g][i][0];
+        if(pos == cromo) {
+            *j = i;
+             return;
         }
+
+    }
+    return NULL;
+}
+
+void teste_gera(float total)
+{
+    printf("\ntotal f = %f\n", total);
+    int j, k;
+    int i;
+    for(j = 0; j < TAMPOP; j++) {
+        pos_cromo(indice_notas[j], i_geraativa, &i);
+        for(k = 0; k < TAMCROMO; k++) {
+            posicao * pos = m_i_pop[i_geraativa][i][k];
+            printf("%d.%d [%d]\n", i + 1, k + 1, pos->dado);
+        }
+        printf("Total= %d, pct = %f\n\n", m_f_popaval[i_geraativa][j], m_f_popaval[i_geraativa][j] / total);
     }
     exit(1);
 }
