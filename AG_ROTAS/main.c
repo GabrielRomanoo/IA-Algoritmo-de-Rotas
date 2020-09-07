@@ -22,6 +22,14 @@ typedef struct {
     int col;
     int dado;
 }posicao;
+typedef struct {
+    double inf;
+    double sup;
+    double porc;
+    posicao ** p;
+}faixas_roleta;
+
+faixas_roleta fx_roleta[TAMPOP];
 
 posicao inicio = {4, 0, 25};
 posicao final = {1, 5, 12};
@@ -29,7 +37,6 @@ posicao final = {1, 5, 12};
 void criapop(void);
 void avaliapop(void);
 void reproduzpop(void);
-void selecionapais(void);
 void cruzapais(void);
 void mutapais(void);
 int checaparada(void);
@@ -143,14 +150,16 @@ void avaliapop(void) {
         }
         indice_notas[j] = &(m_i_pop[i_geraativa][j][0]);
         soma_pesos += m_f_popaval[i_geraativa][j];
-        printf("[Cromo %d, dado= %d] peso= %d\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+        //printf("[Cromo %d, dado= %d] peso= %d\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
         //exit(1);
     }
 
-     printf("\npesos totais %f\n", soma_pesos);
-     ordenar_cromo(m_f_popaval);
-    //exit(2);
+    printf("\npesos totais %f\n\n", soma_pesos);
+    ordenar_cromo(m_f_popaval);
+    roleta(soma_pesos);
     teste_gera(soma_pesos);
+    teste_roleta();
+    exit(1);
     i_geraativa += 1;
 }
 
@@ -161,7 +170,7 @@ void ordenar_cromo(int v[][TAMPOP])
 	for (j = 1; j < TAMPOP; ++j) {
 		x = v[i_geraativa][j];
 		p = indice_notas[j];
-		for (i = j - 1; i >= 0 && v[i_geraativa][i] > x; --i){
+		for (i = j - 1; i >= 0 && v[i_geraativa][i] < x; --i){
             v[i_geraativa][i + 1] = v[i_geraativa][i];
             indice_notas[i + 1] = indice_notas[i];
 		}
@@ -183,11 +192,41 @@ void pos_cromo(posicao * * cromo, int g, int * j)
     return NULL;
 }
 
+void selecionapais()
+{
+
+}
+
+void roleta(double total)
+{
+    int i;
+    for(i = 0; i < TAMPOP; i++) {
+        fx_roleta[i].porc = m_f_popaval[i_geraativa][i] / total;
+        fx_roleta[i].inf = i == 0 ? 0 : fx_roleta[i - 1].sup ;
+        fx_roleta[i].sup = fx_roleta[i].inf + fx_roleta[i].porc;
+        fx_roleta[i].p = indice_notas[TAMPOP - i];
+    }
+}
+
+void teste_roleta()
+{
+    printf("\nTESTE ROLETA\n");
+    int i, j, k;
+    for(int i =0; i < TAMPOP; i++) {
+        pos_cromo(fx_roleta[i].p, i_geraativa, &j); //retorna indice no endere
+        for(k = 0; k < TAMCROMO; k++) {
+           posicao * pos = m_i_pop[i_geraativa][j][k];
+            printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
+        }
+        printf("porc= %lf, lim_inf= %lf, lim_sup= %lf\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
+    }
+}
+
+
 void teste_gera(float total)
 {
     printf("\ntotal f = %f\n", total);
-    int j, k;
-    int i;
+    int j, k, i;
     for(j = 0; j < TAMPOP; j++) {
         pos_cromo(indice_notas[j], i_geraativa, &i);
         for(k = 0; k < TAMCROMO; k++) {
@@ -196,7 +235,6 @@ void teste_gera(float total)
         }
         printf("Total= %d, pct = %f\n\n", m_f_popaval[i_geraativa][j], m_f_popaval[i_geraativa][j] / total);
     }
-    exit(1);
 }
 
 void debug(posicao p1, posicao p2)
@@ -216,7 +254,7 @@ void reproduzpop(void) {
 	int _i_novapop = 0;
 
 	while(_i_novapop < TAMPOP) {
-		selecionapais();
+		selecionapais(1);
 		cruzapais();
 		mutapais();
 
@@ -226,14 +264,7 @@ void reproduzpop(void) {
 	return;
 }
 
-void selecionapais(void) {
 
-	if((rand()%100)<=TAXASEL) {
-
-	}
-
-	return;
-}
 
 void cruzapais(void) {
 
