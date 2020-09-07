@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 
 #define TRUE 1
@@ -37,8 +38,8 @@ posicao final = {1, 5, 12};
 void criapop(void);
 void avaliapop(void);
 void reproduzpop(void);
-void cruzapais(posicao**, posicao**);
-void mutapais(void);
+bool cruzapais(posicao**, posicao**);
+void mutapais(posicao **);
 int checaparada(void);
 void mostrapop(void);
 
@@ -270,12 +271,16 @@ void reproduzpop(void) {
     i_geraativa += 1;
 
 	while(_i_novapop < TAMPOP) {
-		i_pai1 = selecionapais();
-		i_pai2 = selecionapais();
-		debug_pais(i_pai1, i_pai2);
-		cruzapais(i_pai1, i_pai2);
-		mutapais();
-
+		do {
+            i_pai1 = selecionapais();
+            while((i_pai2 = selecionapais()) == i_pai1);
+            debug_pais(i_pai1, i_pai2);
+        }while(!cruzapais(i_pai1, i_pai2));
+		mutapais(i_pai1);
+		mutapais(i_pai2);
+		printf("\n\n***DEBUG MUTA***\n\n");
+		exit(40);
+		//debug_muta(i_pai1);
 		_i_novapop+=2;
 	}
 
@@ -297,8 +302,8 @@ void debug_pais(posicao ** p1, posicao ** p2)
     }
 }
 
-void cruzapais(posicao** pai_1, posicao** pai_2) {
-	//if((rand()%100)<=TAXACRUZ) {
+bool cruzapais(posicao** pai_1, posicao** pai_2) {
+	if(((double)rand() / RAND_MAX)<=TAXACRUZ) {
         int j_pai, k, l_mae;
         int pt_corte = rand() % TAMCROMO;
         printf("RANDOM CORTE %d\n\n", pt_corte);
@@ -316,9 +321,13 @@ void cruzapais(posicao** pai_1, posicao** pai_2) {
         }
 
         debug_cruzamento(j_pai, l_mae);
+        return true;
     }
-//}
+    return false;
 
+}
+
+//final 15
 void debug_cruzamento(int j, int l)
 {
     printf("\n\n***DEBUG CRUZAMENTO***\n\n");
@@ -330,13 +339,25 @@ void debug_cruzamento(int j, int l)
     for(k = 0; k < TAMCROMO; k++){
         printf("G.%d, %d.%d dado= %d\n", i_geraativa, l + 1, k + 1, m_i_pop[i_geraativa][l][k]->dado);
     }
-    exit(15);
+    //exit(15);
 }
 
-void mutapais(void) {
+void debug_muta(posicao** p1)
+{
+    printf("\n\nDEBUGA MUTACAO\n\n");
+    int j, k;
+    pos_cromo(p1, i_geraativa - 1, &j);
+    for(k = 0; k < TAMCROMO; k++){
+        printf("G.%d, %d.%d dado= %d\n", i_geraativa, j + 1, k + 1, m_i_pop[i_geraativa][j][k]->dado);
+    }
+}
 
-	if((rand()%100)<=TAXAMUTA) {
-
+void mutapais(posicao** pos) {
+    if(((double)rand() / RAND_MAX) <= TAXAMUTA) {
+	    int num = rand() % 200, j;
+	    int pt_mt = rand() % TAMCROMO;
+	    pos_cromo(pos, i_geraativa - 1, &j);
+        m_i_pop[i_geraativa][j][pt_mt]->dado = num;
 	}
 	return;
 }
