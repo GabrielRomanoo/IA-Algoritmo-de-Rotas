@@ -13,7 +13,7 @@
 #define TAXAMUTA 0.05
 
 
-#define INSTALL_DEBUGE
+//#define INSTALL_DEBUG
 #define LIN 5
 #define COL 6
 
@@ -37,7 +37,7 @@ posicao final = {1, 5, 12};
 void criapop(void);
 void avaliapop(void);
 void reproduzpop(void);
-void cruzapais(void);
+void cruzapais(posicao**, posicao**);
 void mutapais(void);
 int checaparada(void);
 void mostrapop(void);
@@ -47,8 +47,9 @@ posicao * m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromoss
 int m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
 posicao * * indice_notas[TAMCROMO];
 float m_f_estataval[QTGERA][3]; //matriz de estatisticas: fitness m�nimo, m�ximo, m�dio
-int i_pai1; //primeiro pai selecionado
-int i_pai2; //segundo pai selecionado
+posicao * * i_pai1; //primeiro pai selecionado
+posicao * * i_pai2; //segundo pai selecionado
+double soma_pesos = 0;
 
 typedef struct
 {
@@ -62,7 +63,7 @@ void init_mapa(void);
 void print_mapa(void);
 void testa_cria();
 int dis(posicao * inicio, posicao * atual);
-void teste_gera(float total);
+void teste_gera();
 
 posicao matriz[LIN][COL];
 
@@ -139,7 +140,6 @@ void criapop(void) {
 
 void avaliapop(void) {
     int j, k, i = 0;
-    float soma_pesos = 0;
     for(j = 0; j < TAMPOP; j++) {
         posicao * pos = m_i_pop[i_geraativa][j][0]; //cromo-init
         for(k = 0;  k < TAMCROMO; k++){
@@ -159,7 +159,6 @@ void avaliapop(void) {
     roleta(soma_pesos);
     teste_gera(soma_pesos);
     teste_roleta();
-    exit(1);
     //i_geraativa += 1;
 }
 
@@ -192,13 +191,13 @@ void pos_cromo(posicao * * cromo, int g, int * j)
     return NULL;
 }
 
-void roleta(double total)
+void roleta()
 {
     int i;
     for(i = 0; i < TAMPOP; i++) {
-        fx_roleta[i].porc = m_f_popaval[i_geraativa][i] / total;
+        fx_roleta[i].porc = m_f_popaval[i_geraativa][i] / soma_pesos;
         fx_roleta[i].inf = i == 0 ? 0 : fx_roleta[i - 1].sup ;
-        fx_roleta[i].sup = fx_roleta[i].inf + (fx_roleta[i].porc * total);
+        fx_roleta[i].sup = fx_roleta[i].inf + (fx_roleta[i].porc * soma_pesos);
         fx_roleta[i].p = indice_notas[TAMPOP - i];
     }
 }
@@ -218,9 +217,9 @@ void teste_roleta()
 }
 
 
-void teste_gera(float total)
+void teste_gera()
 {
-    printf("\ntotal f = %f\n", total);
+    printf("\ntotal lf = %f\n", soma_pesos);
     int j, k, i;
     for(j = 0; j < TAMPOP; j++) {
         pos_cromo(indice_notas[j], i_geraativa, &i);
@@ -228,7 +227,7 @@ void teste_gera(float total)
             posicao * pos = m_i_pop[i_geraativa][i][k];
             printf("%d.%d [%d]\n", i + 1, k + 1, pos->dado);
         }
-        printf("Total= %d, pct = %f\n\n", m_f_popaval[i_geraativa][j], m_f_popaval[i_geraativa][j] / total);
+        printf("Total= %d, pct = %f\n\n", m_f_popaval[i_geraativa][j], m_f_popaval[i_geraativa][j] / soma_pesos);
     }
 }
 
@@ -244,18 +243,37 @@ int dis(posicao * inicio, posicao * atual)
     return lin + col;
 }
 
-void selecionapais()
+posicao ** selecionapais()
 {
+    int n = (int)rand() % ((int)soma_pesos + 1);
+    int j, k;
+    for(int i = 0; i < TAMPOP; i++) {
+        if(n >= fx_roleta[i].inf && n <= fx_roleta[i].sup) {
+            #ifdef INSTALL_DEBUG
+            printf("TESTE SLC PAIS\n\nnRandon = %d\n", n);
+            pos_cromo(fx_roleta[i].p, 0, &j);
+            for(k = 0; k < TAMCROMO; k++) {
+                posicao * pos = m_i_pop[0][j][k];
+                printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
+            }
+            exit(3);
+            #endif
+            return fx_roleta[i].p;
+        }
+    }
 
 }
 
 void reproduzpop(void) {
 
 	int _i_novapop = 0;
+    i_geraativa += 1;
 
 	while(_i_novapop < TAMPOP) {
-		selecionapais();
-		cruzapais();
+		i_pai1 = selecionapais();
+		i_pai2 = selecionapais();
+		debug_pais(i_pai1, i_pai2);
+		cruzapais(i_pai1, i_pai2);
 		mutapais();
 
 		_i_novapop+=2;
@@ -264,13 +282,55 @@ void reproduzpop(void) {
 	return;
 }
 
-void cruzapais(void) {
+void debug_pais(posicao ** p1, posicao ** p2)
+{
+    printf("\n***DEBUG PAIS***\n\n");
+    int k, j, l;
+    pos_cromo(p1, 0, &j);
+    for(l = 0; l < 2; l++) {
+        for(k = 0; k < TAMCROMO; k++) {
+            posicao *pos = m_i_pop[0][j][k];
+            printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
+        }
+        printf("\n\n");
+        pos_cromo(p2, 0, &j);
+    }
+}
 
-	if((rand()%100)<=TAXACRUZ) {
+void cruzapais(posicao** pai_1, posicao** pai_2) {
+	//if((rand()%100)<=TAXACRUZ) {
+        int j_pai, k, l_mae;
+        int pt_corte = rand() % TAMCROMO;
+        printf("RANDOM CORTE %d\n\n", pt_corte);
+        pos_cromo(pai_1, i_geraativa - 1, &j_pai);
+        pos_cromo(pai_2, i_geraativa - 1, &l_mae);
+        for(k = 0; k < TAMCROMO; k++) {
+            if(k < pt_corte){
+                m_i_pop[i_geraativa][j_pai][k] = m_i_pop[i_geraativa - 1][j_pai][k];
+                m_i_pop[i_geraativa][l_mae][k] = m_i_pop[i_geraativa - 1][l_mae][k];
+            }
+            else {
+                m_i_pop[i_geraativa][l_mae][k] = m_i_pop[i_geraativa - 1][j_pai][k];
+                m_i_pop[i_geraativa][j_pai][k] = m_i_pop[i_geraativa - 1][l_mae][k];
+            }
+        }
 
-	}
+        debug_cruzamento(j_pai, l_mae);
+    }
+//}
 
-	return;
+void debug_cruzamento(int j, int l)
+{
+    printf("\n\n***DEBUG CRUZAMENTO***\n\n");
+    int k;
+    for(k = 0; k < TAMCROMO; k++){
+        printf("G.%d, %d.%d dado= %d\n", i_geraativa, j + 1, k + 1, m_i_pop[i_geraativa][j][k]->dado);
+    }
+    printf("\n");
+    for(k = 0; k < TAMCROMO; k++){
+        printf("G.%d, %d.%d dado= %d\n", i_geraativa, l + 1, k + 1, m_i_pop[i_geraativa][l][k]->dado);
+    }
+    exit(15);
 }
 
 void mutapais(void) {
