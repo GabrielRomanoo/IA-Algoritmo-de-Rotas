@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1599501895 source:c:\github\trb1-ia-local\ag_rotas\main.c
+1599504772 source:c:\github\trb1-ia-local\ag_rotas\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
