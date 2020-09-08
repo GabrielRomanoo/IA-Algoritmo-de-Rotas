@@ -38,8 +38,8 @@ posicao final = {1, 5, 12};
 void criapop(void);
 void avaliapop(void);
 void reproduzpop(void);
-bool cruzapais(posicao**, posicao**);
-void mutapais(posicao **);
+bool cruzapais(posicao**, posicao**, int *, int *);
+void mutapais(int);
 int checaparada(void);
 void mostrapop(void);
 
@@ -262,32 +262,81 @@ posicao ** selecionapais()
             return fx_roleta[i].p;
         }
     }
+    return NULL;
 
 }
 
 void reproduzpop(void) {
 
-	int _i_novapop = 0;
+	int _i_novapop = 0, j1, j2;
     i_geraativa += 1;
+    posicao** i_pai1_;
+    posicao ** i_pai2_;
 
 	while(_i_novapop < TAMPOP) {
-		do {
-            i_pai1 = selecionapais();
-            while((i_pai2 = selecionapais()) == i_pai1);
-            debug_pais(i_pai1, i_pai2);
-        }while(!cruzapais(i_pai1, i_pai2));
-		mutapais(i_pai1);
-		mutapais(i_pai2);
-		printf("\n\n***DEBUG MUTA***\n\n");
-		exit(40);
+        do
+        {
+            while(!((i_pai1_ = selecionapais()) != NULL));
+            while(!((i_pai2_ = selecionapais()) != NULL));
+            do
+            {
+                if(i_pai2_ == i_pai1_)
+                    while(!((i_pai2_ = selecionapais()) != NULL));//goto
+                else break;
+            }while(!(i_pai2_ != i_pai1_));
+            pos_cromo(i_pai1_, i_geraativa - 1, &j1);
+            pos_cromo(i_pai2_, i_geraativa - 1, &j2);
+            if(i_pai1_ == i_pai2_){
+
+                printf("\nBUUUUUG SAFAAADO IGUAL\n");
+                printf("\nBUUUUUG SAFAAADO IGUAL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
+            }
+            if(i_pai1_ == NULL || i_pai2_ == NULL ){
+                    printf("\nBUUUUUG SAFAAADO NULL");
+                    printf("\nBUUUUUG SAFAAADO NULL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
+            }
+
+
+        //debug_pais(i_pai1, i_pai2);
+        }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
+		mutapais(j1);
+		mutapais(j2);
 		//debug_muta(i_pai1);
 		_i_novapop+=2;
 	}
-
+	mostrapop();
+    exit(255);
 	return;
 }
 
-void debug_pais(posicao ** p1, posicao ** p2)
+void teste_unit_cromo(posicao* p1, posicao* p2, posicao* f1, posicao*  f2, int corte)
+{
+    int j1, j2, j3, j4, k;
+    pos_cromo(p1, i_geraativa, &j1); //pai
+    pos_cromo(p2, i_geraativa, &j2); //mae
+    pos_cromo(f1, i_geraativa, &j3); //filho_pai
+    pos_cromo(f2, i_geraativa, &j4); //filho_mae
+    for(k = 0; k < TAMCROMO; k++) {
+       if(k < corte) {
+            posicao * pai = m_i_pop[i_geraativa - 1][j1][k];
+            posicao * filho_pai = m_i_pop[i_geraativa][j3][k];
+            posicao * mae = m_i_pop[i_geraativa - 1][j2][k];
+            posicao * filho_mae = m_i_pop[i_geraativa][j4][k];
+            if(!(pai->dado == filho_pai->dado))exit(555);
+            if(!(mae->dado == filho_mae))exit(555);
+        }
+        else {
+            posicao * pai = m_i_pop[i_geraativa - 1][j1][k];
+            posicao * filho_pai = m_i_pop[i_geraativa][j3][k];
+            posicao * mae = m_i_pop[i_geraativa - 1][j2][k];
+            posicao * filho_mae = m_i_pop[i_geraativa][j4][k];
+            if(!(pai->dado == filho_pai->dado))exit(555);
+            if(!(mae->dado == filho_mae))exit(555);
+        }
+    }
+}
+
+void debug_pais(posicao** p1, posicao** p2)
 {
     printf("\n***DEBUG PAIS***\n\n");
     int k, j, l;
@@ -301,26 +350,31 @@ void debug_pais(posicao ** p1, posicao ** p2)
         pos_cromo(p2, 0, &j);
     }
 }
-
-bool cruzapais(posicao** pai_1, posicao** pai_2) {
+bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
+	int static id_cruz = 0;
 	if(((double)rand() / RAND_MAX)<=TAXACRUZ) {
         int j_pai, k, l_mae;
-        int pt_corte = rand() % TAMCROMO;
-        printf("RANDOM CORTE %d\n\n", pt_corte);
+        int pt_corte;
+        while((pt_corte = (rand() % TAMCROMO)) == 0 || pt_corte == TAMCROMO - 1);
+        if(pt_corte == 0 || pt_corte == TAMCROMO - 1)pt_corte = 2;
+        //printf("RANDOM CORTE %d\n\n", pt_corte);
         pos_cromo(pai_1, i_geraativa - 1, &j_pai);
         pos_cromo(pai_2, i_geraativa - 1, &l_mae);
         for(k = 0; k < TAMCROMO; k++) {
             if(k < pt_corte){
-                m_i_pop[i_geraativa][j_pai][k] = m_i_pop[i_geraativa - 1][j_pai][k];
-                m_i_pop[i_geraativa][l_mae][k] = m_i_pop[i_geraativa - 1][l_mae][k];
+                m_i_pop[i_geraativa][id_cruz][k] = m_i_pop[i_geraativa - 1][j_pai][k];
+                m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][l_mae][k];
             }
             else {
-                m_i_pop[i_geraativa][l_mae][k] = m_i_pop[i_geraativa - 1][j_pai][k];
-                m_i_pop[i_geraativa][j_pai][k] = m_i_pop[i_geraativa - 1][l_mae][k];
+                m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][j_pai][k];
+                m_i_pop[i_geraativa][id_cruz][k] = m_i_pop[i_geraativa - 1][l_mae][k];
             }
         }
-
-        debug_cruzamento(j_pai, l_mae);
+        *j1 = id_cruz;
+        *j2 = id_cruz + 1;
+        //debug_cruzamento(id_cruz, id_cruz + 1);
+        id_cruz  += 2;
+        id_cruz = (id_cruz == TAMPOP) ? 0 : id_cruz;
         return true;
     }
     return false;
@@ -339,7 +393,7 @@ void debug_cruzamento(int j, int l)
     for(k = 0; k < TAMCROMO; k++){
         printf("G.%d, %d.%d dado= %d\n", i_geraativa, l + 1, k + 1, m_i_pop[i_geraativa][l][k]->dado);
     }
-    //exit(15);
+    exit(16);
 }
 
 void debug_muta(posicao** p1)
@@ -352,14 +406,12 @@ void debug_muta(posicao** p1)
     }
 }
 
-void mutapais(posicao** pos) {
+void mutapais(int j) {
     if(((double)rand() / RAND_MAX) <= TAXAMUTA) {
-	    int num = rand() % 200, j;
+	    int num = rand() % 200;
 	    int pt_mt = rand() % TAMCROMO;
-	    pos_cromo(pos, i_geraativa - 1, &j);
         m_i_pop[i_geraativa][j][pt_mt]->dado = num;
 	}
-	return;
 }
 
 int checaparada(void){
@@ -368,6 +420,13 @@ int checaparada(void){
 }
 
 void mostrapop(void) {
-
+    printf("\n\n**PRINT POPULACAO\n\n***");
+    int j, k;
+    for(j = 0; j < TAMPOP; j++) {
+        for(k = 0; k < TAMCROMO; k++) {
+            printf("G.%d, %d.%d dado= %d\n", i_geraativa, j + 1, k + 1, m_i_pop[i_geraativa][j][k]->dado);
+        }
+        printf("\n");
+    }
 	return;
 }
