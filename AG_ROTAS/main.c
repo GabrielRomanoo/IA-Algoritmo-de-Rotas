@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 
 #define TRUE 1
 #define FALSE 0
 
 #define QTGERA 1000
-#define TAMPOP 60
-#define TAMCROMO 30
+#define TAMPOP 20
+#define TAMCROMO 10
 #define TAXASEL 0.80
 #define TAXACRUZ 0.90
 #define TAXAMUTA 0.05
@@ -16,7 +17,7 @@
 
 //#define INSTALL_DEBUG
 #define LIN 5
-#define COL 6
+#define COL 2//6
 
 typedef struct {
     int linha;
@@ -72,11 +73,10 @@ int main(void) {
 
 	srand(time(NULL));
 	init_mapa();
-	//print_mapa();
-
-
+	print_mapa();
 	criapop();
-	testa_cria();
+	mostrapop();
+
 	while(TRUE) {
 		avaliapop();
 		reproduzpop();
@@ -100,24 +100,9 @@ void init_mapa()
     }
 }
 
-void testa_cria()
-{
-    printf("\n\nTestando primeira geracao\n");
-    int i, j, k;
-    for(i = 0; i < 1; i++) {
-        for(j = 0; j < TAMPOP; j++) {
-            for(k = 0; k < TAMCROMO; k++) {
-                posicao * pos =  (posicao *) m_i_pop[i][j][k];
-                printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
-
-}
 void print_mapa()
 {
+    printf("\n\n*** PRINT MAPA ***\n\n");
     int i, j;
     for(i = 0; i < LIN; i++) {
         for(j = 0; j < COL; j++) {
@@ -136,32 +121,91 @@ void criapop(void) {
             }
         }
     }
-	return;
 }
 
 void avaliapop(void) {
-    int j, k, i = 0;
+    int j, k, i = 0, seq = 0, peso = 0, pontos = 0;
+    soma_pesos = 0;
     for(j = 0; j < TAMPOP; j++) {
         posicao * pos = m_i_pop[i_geraativa][j][0]; //cromo-init
         for(k = 0;  k < TAMCROMO; k++){
-            if(k == 0)
-                m_f_popaval[i_geraativa][j] += dis(&inicio, pos);
-            else
-                m_f_popaval[i_geraativa][j] += dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);
+            if(k == 0){
+                peso = dis(&inicio, pos); //atribui nota
+                m_f_popaval[i_geraativa][j] += peso;
+            }
+            else {
+                peso = dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);
+                //if(peso == 1)seq++;
+                //else seq = 0;
+                //if(seq >= 4) pontos * pontos;
+                //else if(seq >= 8) pontos += 2;
+                m_f_popaval[i_geraativa][j] += peso;
+            }
+            //printf("peso= %d\n", peso);
         }
         indice_notas[j] = &(m_i_pop[i_geraativa][j][0]);
+        printf("/nMaior dado no Cromo %d eh : %d\n", normaliza_pesos(j));
+        exit(1);
+        //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
         soma_pesos += m_f_popaval[i_geraativa][j];
-        //printf("[Cromo %d, dado= %d] peso= %d\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
-        //exit(1);
+       // printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+
     }
 
-    printf("\npesos totais %f\n\n", soma_pesos);
+    //printf("\npesos totais %f\n\n", soma_pesos);
+
     ordenar_cromo(m_f_popaval);
+    //teste_gera(soma_pesos);
     roleta(soma_pesos);
-    teste_gera(soma_pesos);
-    teste_roleta();
+    //teste_roleta();
+     //exit(111);
+    //reavalia();
+    //teste_gera(soma_pesos);
+    //teste_roleta();
     //i_geraativa += 1;
 }
+
+
+int contabiliza_ocorrencia(int dado, int j)
+{
+    int k, ocorrencia = 0;
+    for(k = 0; k < TAMCROMO; k++) {
+        if(dado == m_i_pop[i_geraativa][j][k]->dado)
+            ocorrencia++;
+    }
+    printf("\nCromo %d. dado= %d ocorre= %d vezes,", j + 1, dado, ocorrencia);
+    return ocorrencia;
+}
+
+int normaliza_pesos(int j)
+{
+    int k, contab;
+    int maior = contabiliza_ocorrencia(m_i_pop[i_geraativa][j][0]->dado, j);
+    for(k = 0; k < TAMCROMO - 1; k++){
+        int contab = contabiliza_ocorrencia(m_i_pop[i_geraativa][j][k + 1]->dado, j);
+        if(contab > maior)
+            maior = contab;
+    }
+    return contab;
+}
+
+void reavalia()
+{
+    int j, k, k1, ponto = 0;
+    for(j = 0; j < TAMPOP; j++) {
+        for(k = 0; k < TAMCROMO; k++){
+            if(m_i_pop[i_geraativa][j][k]->dado == 1)ponto++;
+            if(ponto < 8) {
+                printf("\nBOM\n\n");
+                for(k1 = 0; k1 < TAMCROMO; k1++)
+                    printf("G.%d, %d.%d [%d]\n",i_geraativa + 1, j + 1, k1 + 1, m_i_pop[i_geraativa][j][k1]->dado);
+                exit(444);
+            }
+            ponto = 0;
+        }
+    }
+}
+
 
 void ordenar_cromo(int v[][TAMPOP])
 {
@@ -199,7 +243,9 @@ void roleta()
         fx_roleta[i].porc = m_f_popaval[i_geraativa][i] / soma_pesos;
         fx_roleta[i].inf = i == 0 ? 0 : fx_roleta[i - 1].sup ;
         fx_roleta[i].sup = fx_roleta[i].inf + (fx_roleta[i].porc * soma_pesos);
-        fx_roleta[i].p = indice_notas[TAMPOP - i];
+        fx_roleta[i].p = indice_notas[(TAMPOP - 1) - i];
+        //printf("dado=[%d]\n", fx_roleta[i].p->dado);
+
     }
 }
 
@@ -220,6 +266,7 @@ void teste_roleta()
 
 void teste_gera()
 {
+    printf("\n\n***TESTA COMO FICOU***\n\n");
     printf("\ntotal lf = %f\n", soma_pesos);
     int j, k, i;
     for(j = 0; j < TAMPOP; j++) {
@@ -239,9 +286,15 @@ void debug(posicao p1, posicao p2)
 
 int dis(posicao * inicio, posicao * atual)
 {
-    int lin = (inicio->linha - atual->linha) * (inicio->linha - atual->linha);
-    int col = (inicio->col - atual->col) * (inicio->col - atual->col);
-    return lin + col;
+
+        int lin = (inicio->linha - atual->linha) * (inicio->linha - atual->linha);
+        int col = (inicio->col - atual->col) * (inicio->col - atual->col);
+         /*printf("\nG.%d, (p1.dado= %d, %d,%d) , (p2.dado= %d, %d.%d) .TT= %d\n",
+                        i_geraativa, inicio->dado, inicio->linha, inicio->col,
+                        atual->dado, atual->linha, atual->col, lin + col);
+                        //exit(111);*/
+        if((inicio->linha == atual->linha) && (inicio->col == atual->col))return 16;
+        return lin + col;
 }
 
 posicao ** selecionapais()
@@ -272,6 +325,7 @@ void reproduzpop(void) {
     i_geraativa += 1;
     posicao** i_pai1_;
     posicao ** i_pai2_;
+    ilitismo();
 
 	while(_i_novapop < TAMPOP) {
         do
@@ -304,9 +358,20 @@ void reproduzpop(void) {
 		//debug_muta(i_pai1);
 		_i_novapop+=2;
 	}
-	mostrapop();
-    exit(255);
-	return;
+	//mostrapop();
+}
+
+void ilitismo()
+{
+    int j1, j2, k;
+    pos_cromo(indice_notas[TAMPOP - 1], i_geraativa - 1, &j1);
+    pos_cromo(indice_notas[TAMPOP - 2], i_geraativa - 1, &j2);
+    for(k = 0; k < TAMCROMO; k++) {
+        posicao * pos1 = m_i_pop[i_geraativa - 1][j1][k];
+        posicao * pos2 = m_i_pop[i_geraativa - 1][j2][k];
+        m_i_pop[i_geraativa][0][k] = pos1;
+        m_i_pop[i_geraativa][1][k] = pos2;
+    }
 }
 
 void debug_pais(posicao** p1, posicao** p2)
@@ -324,7 +389,7 @@ void debug_pais(posicao** p1, posicao** p2)
     }
 }
 bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
-	int static id_cruz = 0;
+	int static id_cruz = 2;
 	if(((double)rand() / RAND_MAX)<=TAXACRUZ) {
         int j_pai, k, l_mae;
         int pt_corte;
@@ -389,7 +454,7 @@ void teste_unit_cromo(posicao** p1, posicao** p2, posicao** f1, posicao** f2, in
             }
             if(!(mae->dado == filho_pai->dado)) {
                 exit(555);
-            };
+            }
         }
     }
 }
@@ -420,7 +485,7 @@ void debug_muta(posicao** p1)
 
 void mutapais(int j) {
     if(((double)rand() / RAND_MAX) <= TAXAMUTA) {
-	    int num = rand() % 200;
+	    int num = 1 + (rand() % 15);
 	    int pt_mt = rand() % TAMCROMO;
         m_i_pop[i_geraativa][j][pt_mt]->dado = num;
 	}
@@ -428,15 +493,17 @@ void mutapais(int j) {
 
 int checaparada(void){
 
-	return TRUE;
+	return (i_geraativa == QTGERA - 1);
 }
 
 void mostrapop(void) {
-    printf("\n\n**PRINT POPULACAO\n\n***");
+    printf("\n\n**PRINT POPULACAO***\n\n");
     int j, k;
     for(j = 0; j < TAMPOP; j++) {
         for(k = 0; k < TAMCROMO; k++) {
-            printf("G.%d, %d.%d dado= %d\n", i_geraativa, j + 1, k + 1, m_i_pop[i_geraativa][j][k]->dado);
+            printf("G.%d, %d.%d dado= %d, [%d][%d]\n",
+                    i_geraativa, j + 1, k + 1, m_i_pop[i_geraativa][j][k]->dado,
+                     m_i_pop[i_geraativa][j][k]->linha, m_i_pop[i_geraativa][j][k]->col);
         }
         printf("\n");
     }
