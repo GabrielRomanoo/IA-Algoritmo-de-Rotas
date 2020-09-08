@@ -309,33 +309,6 @@ void reproduzpop(void) {
 	return;
 }
 
-void teste_unit_cromo(posicao* p1, posicao* p2, posicao* f1, posicao*  f2, int corte)
-{
-    int j1, j2, j3, j4, k;
-    pos_cromo(p1, i_geraativa, &j1); //pai
-    pos_cromo(p2, i_geraativa, &j2); //mae
-    pos_cromo(f1, i_geraativa, &j3); //filho_pai
-    pos_cromo(f2, i_geraativa, &j4); //filho_mae
-    for(k = 0; k < TAMCROMO; k++) {
-       if(k < corte) {
-            posicao * pai = m_i_pop[i_geraativa - 1][j1][k];
-            posicao * filho_pai = m_i_pop[i_geraativa][j3][k];
-            posicao * mae = m_i_pop[i_geraativa - 1][j2][k];
-            posicao * filho_mae = m_i_pop[i_geraativa][j4][k];
-            if(!(pai->dado == filho_pai->dado))exit(555);
-            if(!(mae->dado == filho_mae))exit(555);
-        }
-        else {
-            posicao * pai = m_i_pop[i_geraativa - 1][j1][k];
-            posicao * filho_pai = m_i_pop[i_geraativa][j3][k];
-            posicao * mae = m_i_pop[i_geraativa - 1][j2][k];
-            posicao * filho_mae = m_i_pop[i_geraativa][j4][k];
-            if(!(pai->dado == filho_pai->dado))exit(555);
-            if(!(mae->dado == filho_mae))exit(555);
-        }
-    }
-}
-
 void debug_pais(posicao** p1, posicao** p2)
 {
     printf("\n***DEBUG PAIS***\n\n");
@@ -373,6 +346,9 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
         *j1 = id_cruz;
         *j2 = id_cruz + 1;
         //debug_cruzamento(id_cruz, id_cruz + 1);
+        teste_unit_cromo(&m_i_pop[i_geraativa - 1][j_pai][0], &m_i_pop[i_geraativa - 1][l_mae][0],
+                         &m_i_pop[i_geraativa][id_cruz][0], &m_i_pop[i_geraativa][id_cruz + 1][0],
+                         pt_corte);
         id_cruz  += 2;
         id_cruz = (id_cruz == TAMPOP) ? 0 : id_cruz;
         return true;
@@ -381,6 +357,42 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
 
 }
 
+void teste_unit_cromo(posicao** p1, posicao** p2, posicao** f1, posicao** f2, int corte)
+{
+    int j1, j2, j3, j4, k;
+    pos_cromo(p1, i_geraativa - 1, &j1); //pai
+    pos_cromo(p2, i_geraativa - 1, &j2); //mae
+    pos_cromo(f1, i_geraativa, &j3); //filho_pai
+    pos_cromo(f2, i_geraativa, &j4); //filho_mae
+    for(k = 0; k < TAMCROMO; k++) {
+       if(k < corte) {
+            posicao * pai = m_i_pop[i_geraativa - 1][j1][k];
+            posicao * filho_pai = m_i_pop[i_geraativa][j3][k];
+            posicao * mae = m_i_pop[i_geraativa - 1][j2][k];
+            posicao * filho_mae = m_i_pop[i_geraativa][j4][k];
+            if(!(pai->dado == filho_pai->dado))
+            {
+                exit(555);
+            }
+            if(!(mae->dado == filho_mae->dado))
+            {
+                    exit(555);
+            }
+        }
+        else {
+            posicao * pai = m_i_pop[i_geraativa - 1][j1][k];
+            posicao * filho_pai = m_i_pop[i_geraativa][j3][k];
+            posicao * mae = m_i_pop[i_geraativa - 1][j2][k];
+            posicao * filho_mae = m_i_pop[i_geraativa][j4][k];
+            if(!(pai->dado == filho_mae->dado)){
+                    exit(555);
+            }
+            if(!(mae->dado == filho_pai->dado)) {
+                exit(555);
+            };
+        }
+    }
+}
 //final 15
 void debug_cruzamento(int j, int l)
 {
