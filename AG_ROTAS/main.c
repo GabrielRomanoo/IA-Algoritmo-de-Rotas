@@ -1,3 +1,21 @@
+/* 
+ * AlgoritmoGenetico.c
+ *
+ * Programa que simula um algoritmo genético.
+ *
+ * Felipe Ferreira Nascimento (Ciência da Computação)
+ * Gabriel Romano Godoi Pereira (Ciência da Computação)
+ * Jaime Mathias de Lara Bueno (Ciência da Computação)
+ * Marcus Vinicius de Souza Olimpio da Silva (Ciência da Computação)
+ * Willy Pestana Filho (Ciência da Computação)
+ *
+ * Disciplina: Inteligência Artificial II
+ * 
+ * Professor: Marcio Luiz Piva
+ *
+ * Data de entrega: Setembro
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
