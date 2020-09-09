@@ -7,7 +7,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define QTGERA 5
+#define QTGERA 1000
 #define TAMPOP 60
 #define TAMCROMO 30
 #define TAXASEL 0.80
@@ -75,16 +75,16 @@ int main(void) {
 	init_mapa();
 	print_mapa();
 	criapop();
-	//mostrapop();
+	mostrapop();
 
 	while(TRUE) {
 		avaliapop();
 		reproduzpop();
-		mostrapop();
+		//mostrapop();
 
 		if(checaparada()) break;
 	}
-	//mostrapop();
+	mostrapop();
 
 	return 0;
 }
@@ -347,8 +347,8 @@ void reproduzpop(void) {
 
         //debug_pais(i_pai1, i_pai2);
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
-		mutapais(j1);
-		mutapais(j2);
+		//mutapais(j1);
+		//mutapais(j2);
 		//debug_muta(i_pai1);
 		_i_novapop+=2;
 	}
