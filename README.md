@@ -9,5 +9,6 @@
 - Marcus Vinicius
 
 ## LINGUAGENS E TECNOLOGIAS 
-- Linguagem C
+- Linguagem C para lógica 
+- C# para interface
 
