@@ -7,9 +7,9 @@
 #define TRUE 1
 #define FALSE 0
 
-#define QTGERA 1000
-#define TAMPOP 20
-#define TAMCROMO 10
+#define QTGERA 5
+#define TAMPOP 60
+#define TAMCROMO 30
 #define TAXASEL 0.80
 #define TAXACRUZ 0.90
 #define TAXAMUTA 0.05
@@ -17,7 +17,7 @@
 
 //#define INSTALL_DEBUG
 #define LIN 5
-#define COL 2//6
+#define COL 6
 
 typedef struct {
     int linha;
@@ -75,15 +75,16 @@ int main(void) {
 	init_mapa();
 	print_mapa();
 	criapop();
-	mostrapop();
+	//mostrapop();
 
 	while(TRUE) {
 		avaliapop();
 		reproduzpop();
+		mostrapop();
 
 		if(checaparada()) break;
 	}
-	mostrapop();
+	//mostrapop();
 
 	return 0;
 }
@@ -114,9 +115,9 @@ void print_mapa()
 
 void criapop(void) {
     int i, j, k;
-    for(i = 0; i < 1; i++) {
-        for(j = 0; j < TAMPOP; j++) {
-            for(k = 0; k < TAMCROMO; k++) {
+    for(i = 0; i < 1; i++) { //for gerecao
+        for(j = 0; j < TAMPOP; j++) { //for cromosso
+            for(k = 0; k < TAMCROMO; k++) { //for dos alelos
                 m_i_pop[i][j][k] = &matriz[rand() % (LIN - 1)][rand() % (COL - 1)];
             }
         }
@@ -134,35 +135,30 @@ void avaliapop(void) {
                 m_f_popaval[i_geraativa][j] += peso;
             }
             else {
-                peso = dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);
-                //if(peso == 1)seq++;
-                //else seq = 0;
-                //if(seq >= 4) pontos * pontos;
-                //else if(seq >= 8) pontos += 2;
+                peso = dis(&final, pos); //atribui peso do final.
+                peso += dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);//funcao de custo
                 m_f_popaval[i_geraativa][j] += peso;
             }
             //printf("peso= %d\n", peso);
         }
-        indice_notas[j] = &(m_i_pop[i_geraativa][j][0]);
-        printf("/nMaior dado no Cromo %d eh : %d\n", normaliza_pesos(j));
-        exit(1);
+        indice_notas[j] = &(m_i_pop[i_geraativa][j][0]); //guarda o endereco do cromosso
+       // printf("/nMaior dado no Cromo %d eh : %d\n", j, normaliza_pesos(j));
+        //exit(1);
         //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
-        soma_pesos += m_f_popaval[i_geraativa][j];
-       // printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+        soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
+       //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
 
     }
 
-    //printf("\npesos totais %f\n\n", soma_pesos);
+    printf("\npesos totais %f\n\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
-    //teste_gera(soma_pesos);
+    //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
     roleta(soma_pesos);
     //teste_roleta();
-     //exit(111);
     //reavalia();
     //teste_gera(soma_pesos);
     //teste_roleta();
-    //i_geraativa += 1;
 }
 
 
@@ -182,11 +178,11 @@ int normaliza_pesos(int j)
     int k, contab;
     int maior = contabiliza_ocorrencia(m_i_pop[i_geraativa][j][0]->dado, j);
     for(k = 0; k < TAMCROMO - 1; k++){
-        int contab = contabiliza_ocorrencia(m_i_pop[i_geraativa][j][k + 1]->dado, j);
+        contab = contabiliza_ocorrencia(m_i_pop[i_geraativa][j][k + 1]->dado, j);
         if(contab > maior)
             maior = contab;
     }
-    return contab;
+    return maior;
 }
 
 void reavalia()
@@ -222,11 +218,11 @@ void ordenar_cromo(int v[][TAMPOP])
 		indice_notas[i + 1] = p;
 	}
 }
-void pos_cromo(posicao * * cromo, int g, int * j)
+void pos_cromo(posicao** cromo, int g, int * j)
 {
     int i;
     for(i = 0; i < TAMPOP; i++) {
-        posicao ** pos  = &m_i_pop[g][i][0];
+        posicao** pos  = &m_i_pop[g][i][0];
         if(pos == cromo) {
             *j = i;
              return;
@@ -257,9 +253,9 @@ void teste_roleta()
         pos_cromo(fx_roleta[i].p, i_geraativa, &j); //retorna indice no endere
         for(k = 0; k < TAMCROMO; k++) {
            posicao * pos = m_i_pop[i_geraativa][j][k];
-            printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
+            //printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
         }
-        printf("porc= %f, lim_inf= %f, lim_sup= %f\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
+        //printf("porc= %f, lim_inf= %f, lim_sup= %f\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
     }
 }
 
@@ -297,12 +293,12 @@ int dis(posicao * inicio, posicao * atual)
         return lin + col;
 }
 
-posicao ** selecionapais()
+posicao** selecionapais()
 {
     int n = (int)rand() % ((int)soma_pesos + 1);
     int j, k;
     for(int i = 0; i < TAMPOP; i++) {
-        if(n >= fx_roleta[i].inf && n <= fx_roleta[i].sup) {
+        if(n > fx_roleta[i].inf && n <= fx_roleta[i].sup) {
             #ifdef INSTALL_DEBUG
             printf("TESTE SLC PAIS\n\nnRandon = %d\n", n);
             pos_cromo(fx_roleta[i].p, 0, &j);
@@ -316,7 +312,6 @@ posicao ** selecionapais()
         }
     }
     return NULL;
-
 }
 
 void reproduzpop(void) {
@@ -324,22 +319,22 @@ void reproduzpop(void) {
 	int _i_novapop = 0, j1, j2;
     i_geraativa += 1;
     posicao** i_pai1_;
-    posicao ** i_pai2_;
-    ilitismo();
+    posicao** i_pai2_;
+    //ilitismo();
 
 	while(_i_novapop < TAMPOP) {
         do
         {
-            while(!((i_pai1_ = selecionapais()) != NULL));
-            while(!((i_pai2_ = selecionapais()) != NULL));
+            while(!((i_pai1_ = selecionapais()) != NULL));//go to
+            while(!((i_pai2_ = selecionapais()) != NULL));//go to
             do
             {
                 if(i_pai2_ == i_pai1_)
                     while(!((i_pai2_ = selecionapais()) != NULL));//goto
                 else break;
             }while(!(i_pai2_ != i_pai1_));
-            pos_cromo(i_pai1_, i_geraativa - 1, &j1);
-            pos_cromo(i_pai2_, i_geraativa - 1, &j2);
+            pos_cromo(i_pai1_, i_geraativa - 1, &j1);//go to
+            pos_cromo(i_pai2_, i_geraativa - 1, &j2);// go to
             if(i_pai1_ == i_pai2_){
 
                 printf("\nBUUUUUG SAFAAADO IGUAL\n");
@@ -349,7 +344,6 @@ void reproduzpop(void) {
                     printf("\nBUUUUUG SAFAAADO NULL");
                     printf("\nBUUUUUG SAFAAADO NULL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
             }
-
 
         //debug_pais(i_pai1, i_pai2);
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
@@ -389,15 +383,15 @@ void debug_pais(posicao** p1, posicao** p2)
     }
 }
 bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
-	int static id_cruz = 2;
+	int static id_cruz = 0;
 	if(((double)rand() / RAND_MAX)<=TAXACRUZ) {
         int j_pai, k, l_mae;
         int pt_corte;
         while((pt_corte = (rand() % TAMCROMO)) == 0 || pt_corte == TAMCROMO - 1);
         if(pt_corte == 0 || pt_corte == TAMCROMO - 1)pt_corte = 2;
-        //printf("RANDOM CORTE %d\n\n", pt_corte);
-        pos_cromo(pai_1, i_geraativa - 1, &j_pai);
-        pos_cromo(pai_2, i_geraativa - 1, &l_mae);
+       //printf("RANDOM CORTE %d\n\n", pt_corte);
+        pos_cromo(pai_1, i_geraativa - 1, &j_pai);//go to
+        pos_cromo(pai_2, i_geraativa - 1, &l_mae);//go to
         for(k = 0; k < TAMCROMO; k++) {
             if(k < pt_corte){
                 m_i_pop[i_geraativa][id_cruz][k] = m_i_pop[i_geraativa - 1][j_pai][k];
@@ -502,7 +496,7 @@ void mostrapop(void) {
     for(j = 0; j < TAMPOP; j++) {
         for(k = 0; k < TAMCROMO; k++) {
             printf("G.%d, %d.%d dado= %d, [%d][%d]\n",
-                    i_geraativa, j + 1, k + 1, m_i_pop[i_geraativa][j][k]->dado,
+                    i_geraativa + 1, j + 1, k + 1, m_i_pop[i_geraativa][j][k]->dado,
                      m_i_pop[i_geraativa][j][k]->linha, m_i_pop[i_geraativa][j][k]->col);
         }
         printf("\n");
