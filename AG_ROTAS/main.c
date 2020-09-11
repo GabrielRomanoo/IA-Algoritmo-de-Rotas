@@ -458,7 +458,7 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
         verifica_repeticoes(l_mae, id_cruz + 1, pt_corte_1, pt_corte_2);
         *j1 = id_cruz;
         *j2 = id_cruz + 1;
-        printf("\nTirando repeticoes\n")
+        printf("\n***Tirando repeticoes***\n");
         debug_cruzamento(id_cruz, id_cruz + 1);
         #ifdef INSTALL_DEBUG
 
@@ -478,10 +478,11 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
 void verifica_repeticoes(int j_pai, int j_filho, int pt_corte_1, int pt_corte_2)
 {
     int k, k1;
+    int jpai = j_pai, jfilho = j_filho;
     for(k = TAMCROMO - 1; k > pt_corte_2; k--){
         for(k1 = pt_corte_1; k1 < pt_corte_2; k1++){
             if(m_i_pop[i_geraativa][j_filho][k]->dado == m_i_pop[i_geraativa][j_filho][k1]->dado){//go do, comparar end ou dado?
-                m_i_pop[i_geraativa - 1][j_pai][k1] = m_i_pop[i_geraativa - 1][j_filho][k];
+                 m_i_pop[i_geraativa - 1][j_filho][k] = m_i_pop[i_geraativa - 1][j_pai][k1];
                 break;
             }
 
