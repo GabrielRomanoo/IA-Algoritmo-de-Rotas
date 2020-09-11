@@ -1,4 +1,4 @@
-/* 
+/*
  * AlgoritmoGenetico.c
  *
  * Programa que simula um algoritmo genético.
@@ -10,7 +10,7 @@
  * Willy Pestana Filho (Ciência da Computação)
  *
  * Disciplina: Inteligência Artificial II
- * 
+ *
  * Professor: Marcio Luiz Piva
  *
  * Data de entrega: Setembro
@@ -131,13 +131,31 @@ void print_mapa()
     }
 }
 
+
 void criapop(void) {
-    int i, j, k;
-    for(i = 0; i < 1; i++) { //for gerecao
-        for(j = 0; j < TAMPOP; j++) { //for cromosso
-            for(k = 0; k < TAMCROMO; k++) { //for dos alelos
-                m_i_pop[i][j][k] = &matriz[rand() % (LIN - 1)][rand() % (COL - 1)];
+    int i, j, k = 0, i_, j_;
+    for(i = 0; i < 1; i++){ //for gerecao
+        for(j = 0; j < TAMPOP; j++){ //for cromosso
+            for(i_ = 0; i_ < LIN; i_++){
+                for(j_ = 0; j_ < COL; j_++) {
+                    m_i_pop[i][j][k++] = &matriz[i_][j_];
+                }
             }
+            k = 0;
+        }
+        embaralha_alelos(i);
+    }
+}
+
+void embaralha_alelos(int i)
+{
+    int j, k;
+    for(j = 0; j < TAMPOP; j++){
+        for(k = 0; k < TAMCROMO; k++){
+            posicao * troca_aux = m_i_pop[i][j][k];
+            int troca = rand() % TAMCROMO;
+            m_i_pop[i][j][k] = m_i_pop[i][j][troca];
+            m_i_pop[i][j][troca] = troca_aux;
         }
     }
 }
