@@ -182,16 +182,16 @@ void avaliapop(void) {
         //exit(1);
         //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
         soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
-       printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+       //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
 
     }
 
     printf("\npesos totais %f\n\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
-    teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
+    //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
     roleta(soma_pesos);
-    teste_roleta();
+    //teste_roleta();
     //reavalia();
     //teste_gera(soma_pesos);
 }
@@ -359,7 +359,7 @@ void print_cromo(int j)
 
 void reproduzpop(void) {
 
-	int _i_novapop = 0, j1, j2, k;
+	int _i_novapop = 0, j1, j2;
     i_geraativa += 1;
     posicao** i_pai1_;
     posicao** i_pai2_;
@@ -368,16 +368,16 @@ void reproduzpop(void) {
 	while(_i_novapop < TAMPOP) {
         do
         {
-            while(!((i_pai1_ = selecionapais()) != NULL));//go to
-            while(!((i_pai2_ = selecionapais()) != NULL));//go to
+            while(!((i_pai1_ = selecionapais()) != NULL));//go do
+            while(!((i_pai2_ = selecionapais()) != NULL));//go do
             do
             {
                 if(i_pai2_ == i_pai1_)
-                    while(!((i_pai2_ = selecionapais()) != NULL));//goto
+                    while(!((i_pai2_ = selecionapais()) != NULL));//go do
                 else break;
             }while(!(i_pai2_ != i_pai1_));
-            pos_cromo(i_pai1_, i_geraativa - 1, &j1);//go to
-            pos_cromo(i_pai2_, i_geraativa - 1, &j2);// go to
+            pos_cromo(i_pai1_, i_geraativa - 1, &j1);//go do
+            pos_cromo(i_pai2_, i_geraativa - 1, &j2);// go do
 
             if(i_pai1_ == i_pai2_){
 
@@ -388,12 +388,12 @@ void reproduzpop(void) {
                     printf("\nBUUUUUG SAFAAADO NULL");
                     printf("\nBUUUUUG SAFAAADO NULL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
             }
-        //debug_pais(i_pai1, i_pai2);
+        //debug_pais(i_pai1, i_pai2);// pegar bug
         print_cromo(j1);
         print_cromo(j2);
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
 
-        exit(555);
+        exit(556);
 		//mutapais(j1);
 		//mutapais(j2);
 		//debug_muta(i_pai1);
@@ -440,7 +440,7 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
               || pt_corte_2 == TAMCROMO - 1
                 || pt_corte_2 < pt_corte_1);
         //if(pt_corte == 0 || pt_corte == TAMCROMO - 1)pt_corte = 2;
-       printf("RANDOM CORTE_1 %d, RANDOM CORTE_2 %d\n\n", pt_corte_1, pt_corte_2);
+        printf("RANDOM CORTE_1 %d, RANDOM CORTE_2 %d\n\n", pt_corte_1, pt_corte_2);
         pos_cromo(pai_1, i_geraativa - 1, &j_pai);//go to
         pos_cromo(pai_2, i_geraativa - 1, &l_mae);//go to
         for(k = 0; k < TAMCROMO; k++) {
@@ -453,21 +453,40 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
                 m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][l_mae][k];
             }
         }
+        debug_cruzamento(id_cruz, id_cruz + 1);
+        verifica_repeticoes(j_pai, id_cruz, pt_corte_1, pt_corte_2);
+        verifica_repeticoes(l_mae, id_cruz + 1, pt_corte_1, pt_corte_2);
         *j1 = id_cruz;
         *j2 = id_cruz + 1;
+        printf("\nTirando repeticoes\n")
         debug_cruzamento(id_cruz, id_cruz + 1);
         #ifdef INSTALL_DEBUG
 
         teste_unit_cromo(&m_i_pop[i_geraativa - 1][j_pai][0], &m_i_pop[i_geraativa - 1][l_mae][0],
                          &m_i_pop[i_geraativa][id_cruz][0], &m_i_pop[i_geraativa][id_cruz + 1][0],
                          pt_corte_1);
+        #endif // INSTALL_DEBUG
         id_cruz  += 2;
         id_cruz = (id_cruz == TAMPOP) ? 0 : id_cruz;
-        #endif // INSTALL_DEBUG
+
         return true;
     }
     return false;
 
+}
+
+void verifica_repeticoes(int j_pai, int j_filho, int pt_corte_1, int pt_corte_2)
+{
+    int k, k1;
+    for(k = TAMCROMO - 1; k > pt_corte_2; k--){
+        for(k1 = pt_corte_1; k1 < pt_corte_2; k1++){
+            if(m_i_pop[i_geraativa][j_filho][k]->dado == m_i_pop[i_geraativa][j_filho][k1]->dado){//go do, comparar end ou dado?
+                m_i_pop[i_geraativa - 1][j_pai][k1] = m_i_pop[i_geraativa - 1][j_filho][k];
+                break;
+            }
+
+        }
+    }
 }
 
 void teste_unit_cromo(posicao** p1, posicao** p2, posicao** f1, posicao** f2, int corte)
