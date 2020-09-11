@@ -182,19 +182,18 @@ void avaliapop(void) {
         //exit(1);
         //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
         soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
-       //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+       printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
 
     }
 
     printf("\npesos totais %f\n\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
-    //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
+    teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
     roleta(soma_pesos);
-    //teste_roleta();
+    teste_roleta();
     //reavalia();
     //teste_gera(soma_pesos);
-    //teste_roleta();
 }
 
 
@@ -289,9 +288,9 @@ void teste_roleta()
         pos_cromo(fx_roleta[i].p, i_geraativa, &j); //retorna indice no endere
         for(k = 0; k < TAMCROMO; k++) {
            posicao * pos = m_i_pop[i_geraativa][j][k];
-            //printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
+            printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
         }
-        //printf("porc= %f, lim_inf= %f, lim_sup= %f\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
+        printf("porc= %f, lim_inf= %f, lim_sup= %f\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
     }
 }
 
@@ -328,7 +327,7 @@ int dis(posicao * inicio, posicao * atual)
         if((inicio->linha == atual->linha) && (inicio->col == atual->col))return 16;
         return lin + col;
 }
-
+//#define INSTALL_DEBUG
 posicao** selecionapais()
 {
     int n = (int)rand() % ((int)soma_pesos + 1);
@@ -342,7 +341,7 @@ posicao** selecionapais()
                 posicao * pos = m_i_pop[0][j][k];
                 printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
             }
-            exit(3);
+            //exit(3);
             #endif
             return fx_roleta[i].p;
         }
@@ -350,9 +349,17 @@ posicao** selecionapais()
     return NULL;
 }
 
+void print_cromo(int j)
+{
+    printf("Print Cromo PAI %d\n", j);
+    int k;
+    for(k = 0; k < TAMCROMO; k++)
+        printf("C.%d.%d dado= %d\n", j + 1, k + 1, m_i_pop[i_geraativa - 1][j][k]->dado);
+}
+
 void reproduzpop(void) {
 
-	int _i_novapop = 0, j1, j2;
+	int _i_novapop = 0, j1, j2, k;
     i_geraativa += 1;
     posicao** i_pai1_;
     posicao** i_pai2_;
@@ -371,6 +378,7 @@ void reproduzpop(void) {
             }while(!(i_pai2_ != i_pai1_));
             pos_cromo(i_pai1_, i_geraativa - 1, &j1);//go to
             pos_cromo(i_pai2_, i_geraativa - 1, &j2);// go to
+
             if(i_pai1_ == i_pai2_){
 
                 printf("\nBUUUUUG SAFAAADO IGUAL\n");
@@ -380,9 +388,12 @@ void reproduzpop(void) {
                     printf("\nBUUUUUG SAFAAADO NULL");
                     printf("\nBUUUUUG SAFAAADO NULL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
             }
-
         //debug_pais(i_pai1, i_pai2);
+        print_cromo(j1);
+        print_cromo(j2);
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
+
+        exit(555);
 		//mutapais(j1);
 		//mutapais(j2);
 		//debug_muta(i_pai1);
@@ -422,30 +433,37 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
 	int static id_cruz = 0;
 	if(((double)rand() / RAND_MAX)<=TAXACRUZ) {
         int j_pai, k, l_mae;
-        int pt_corte;
-        while((pt_corte = (rand() % TAMCROMO)) == 0 || pt_corte == TAMCROMO - 1);
-        if(pt_corte == 0 || pt_corte == TAMCROMO - 1)pt_corte = 2;
-       //printf("RANDOM CORTE %d\n\n", pt_corte);
+        int pt_corte_1, pt_corte_2;
+        while((pt_corte_1 = (rand() % TAMCROMO)) == 0 ||
+               pt_corte_1 == TAMCROMO - 1);
+        while((pt_corte_2 = (rand() % TAMCROMO)) == 0
+              || pt_corte_2 == TAMCROMO - 1
+                || pt_corte_2 < pt_corte_1);
+        //if(pt_corte == 0 || pt_corte == TAMCROMO - 1)pt_corte = 2;
+       printf("RANDOM CORTE_1 %d, RANDOM CORTE_2 %d\n\n", pt_corte_1, pt_corte_2);
         pos_cromo(pai_1, i_geraativa - 1, &j_pai);//go to
         pos_cromo(pai_2, i_geraativa - 1, &l_mae);//go to
         for(k = 0; k < TAMCROMO; k++) {
-            if(k < pt_corte){
-                m_i_pop[i_geraativa][id_cruz][k] = m_i_pop[i_geraativa - 1][j_pai][k];
-                m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][l_mae][k];
+            if(k >= pt_corte_1 && k < pt_corte_2){
+                m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][j_pai][k]; //filho mae
+                m_i_pop[i_geraativa][id_cruz][k] = m_i_pop[i_geraativa - 1][l_mae][k]; //filho pai
             }
             else {
-                m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][j_pai][k];
-                m_i_pop[i_geraativa][id_cruz][k] = m_i_pop[i_geraativa - 1][l_mae][k];
+                m_i_pop[i_geraativa][id_cruz][k] = m_i_pop[i_geraativa - 1][j_pai][k];
+                m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][l_mae][k];
             }
         }
         *j1 = id_cruz;
         *j2 = id_cruz + 1;
-        //debug_cruzamento(id_cruz, id_cruz + 1);
+        debug_cruzamento(id_cruz, id_cruz + 1);
+        #ifdef INSTALL_DEBUG
+
         teste_unit_cromo(&m_i_pop[i_geraativa - 1][j_pai][0], &m_i_pop[i_geraativa - 1][l_mae][0],
                          &m_i_pop[i_geraativa][id_cruz][0], &m_i_pop[i_geraativa][id_cruz + 1][0],
-                         pt_corte);
+                         pt_corte_1);
         id_cruz  += 2;
         id_cruz = (id_cruz == TAMPOP) ? 0 : id_cruz;
+        #endif // INSTALL_DEBUG
         return true;
     }
     return false;
@@ -500,7 +518,6 @@ void debug_cruzamento(int j, int l)
     for(k = 0; k < TAMCROMO; k++){
         printf("G.%d, %d.%d dado= %d\n", i_geraativa, l + 1, k + 1, m_i_pop[i_geraativa][l][k]->dado);
     }
-    exit(16);
 }
 
 void debug_muta(posicao** p1)
