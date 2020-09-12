@@ -389,11 +389,11 @@ void reproduzpop(void) {
                     printf("\nBUUUUUG SAFAAADO NULL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
             }
         //debug_pais(i_pai1, i_pai2);// go to pegar bug
-        print_cromo(j1);
-        print_cromo(j2);
+        //print_cromo(j1);
+        //print_cromo(j2);
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
 
-        exit(556);
+        //exit(556);
 		//mutapais(j1);
 		//mutapais(j2);
 		//debug_muta(i_pai1);
@@ -433,14 +433,15 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
 	int static id_cruz = 0;
 	if(((double)rand() / RAND_MAX)<=TAXACRUZ) {
         int j_pai, k, l_mae;
-        int pt_corte_1, pt_corte_2;
-        while((pt_corte_1 = (rand() % TAMCROMO)) == 0 ||
+        int pt_corte_1 = 3, pt_corte_2 = 10;
+        /*while((pt_corte_1 = (rand() % TAMCROMO)) == 0 ||
                pt_corte_1 == TAMCROMO - 1);
         while((pt_corte_2 = (rand() % TAMCROMO)) == 0
               || pt_corte_2 == TAMCROMO - 1
-                || pt_corte_2 < pt_corte_1);
+                || pt_corte_2 < pt_corte_1 //go to  melhorar
+                || pt_corte_1 == pt_corte_2);*/
         //if(pt_corte == 0 || pt_corte == TAMCROMO - 1)pt_corte = 2;
-        printf("RANDOM CORTE_1 %d, RANDOM CORTE_2 %d\n\n", pt_corte_1, pt_corte_2);
+        //printf("RANDOM CORTE_1 %d, RANDOM CORTE_2 %d\n\n", pt_corte_1, pt_corte_2);
         pos_cromo(pai_1, i_geraativa - 1, &j_pai);//go to
         pos_cromo(pai_2, i_geraativa - 1, &l_mae);//go to
         for(k = 0; k < TAMCROMO; k++) {
@@ -453,13 +454,13 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
                 m_i_pop[i_geraativa][id_cruz + 1][k] = m_i_pop[i_geraativa - 1][l_mae][k];
             }
         }
-        debug_cruzamento(id_cruz, id_cruz + 1);
+        //debug_cruzamento(id_cruz, id_cruz + 1);
         verifica_repeticoes(j_pai, id_cruz, pt_corte_1, pt_corte_2);
         verifica_repeticoes(l_mae, id_cruz + 1, pt_corte_1, pt_corte_2);
         *j1 = id_cruz;
         *j2 = id_cruz + 1;
-        printf("\n***Tirando repeticoes***\n");
-        debug_cruzamento(id_cruz, id_cruz + 1);
+        //printf("\n***Tirando repeticoes***\n");
+        //debug_cruzamento(id_cruz, id_cruz + 1);
         #ifdef INSTALL_DEBUG
 
         teste_unit_cromo(&m_i_pop[i_geraativa - 1][j_pai][0], &m_i_pop[i_geraativa - 1][l_mae][0],
