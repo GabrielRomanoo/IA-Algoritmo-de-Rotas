@@ -388,7 +388,7 @@ void reproduzpop(void) {
                     printf("\nBUUUUUG SAFAAADO NULL");
                     printf("\nBUUUUUG SAFAAADO NULL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
             }
-        //debug_pais(i_pai1, i_pai2);// pegar bug
+        //debug_pais(i_pai1, i_pai2);// go to pegar bug
         print_cromo(j1);
         print_cromo(j2);
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
@@ -478,16 +478,30 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
 void verifica_repeticoes(int j_pai, int j_filho, int pt_corte_1, int pt_corte_2)
 {
     int k, k1;
+    bool cked_1, cked_2;
     int jpai = j_pai, jfilho = j_filho;
-    for(k = TAMCROMO - 1; k > pt_corte_2; k--){
-        for(k1 = pt_corte_1; k1 < pt_corte_2; k1++){
-            if(m_i_pop[i_geraativa][j_filho][k]->dado == m_i_pop[i_geraativa][j_filho][k1]->dado){//go do, comparar end ou dado?
-                 m_i_pop[i_geraativa - 1][j_filho][k] = m_i_pop[i_geraativa - 1][j_pai][k1];
-                break;
+    do{
+        cked_1 = true;
+        cked_2 = true;
+        for(k = TAMCROMO - 1; k > pt_corte_2; k--){
+            for(k1 = pt_corte_1; k1 < pt_corte_2; k1++){
+                if(m_i_pop[i_geraativa][j_filho][k]->dado == m_i_pop[i_geraativa][j_filho][k1]->dado){//go do, comparar end ou dado?
+                     m_i_pop[i_geraativa][j_filho][k] = m_i_pop[i_geraativa - 1][j_pai][k1];
+                    cked_1 = false;
+                    break;
+                }
             }
-
         }
-    }
+        for(k = 0; k < pt_corte_1; k++){
+            for(k1 = pt_corte_1; k1 < pt_corte_2; k1++){
+                if(m_i_pop[i_geraativa][j_filho][k]->dado == m_i_pop[i_geraativa][j_filho][k1]->dado){//go do, comparar end ou dado?
+                     m_i_pop[i_geraativa][j_filho][k] = m_i_pop[i_geraativa - 1][j_pai][k1];
+                    cked_2 = false;
+                    break;
+                }
+            }
+        }
+    } while(!(cked_1 && cked_2));
 }
 
 void teste_unit_cromo(posicao** p1, posicao** p2, posicao** f1, posicao** f2, int corte)
