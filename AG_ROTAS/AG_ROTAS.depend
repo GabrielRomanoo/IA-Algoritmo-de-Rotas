@@ -13,10 +13,20 @@
 	<time.h>
 	<math.h>
 
-1600031282 source:c:\github\trb2-ia\local-ga\ag_rotas\main.c
+1600036210 source:c:\github\trb2-ia\local-ga\ag_rotas\main.c
 	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	"rotas.h"
+	<time.h>
+
+1600035966 source:c:\github\trb2-ia\local-ga\ag_rotas\rotas.c
 	<stdlib.h>
 	<stdbool.h>
 	<time.h>
 	<math.h>
+	"rotas.h"
+
+1600036391 c:\github\trb2-ia\local-ga\ag_rotas\rotas.h
+	<stdbool.h>
 
