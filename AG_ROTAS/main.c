@@ -13,7 +13,6 @@
  *
  * Professor: Marcio Luiz Piva
  *
- * Data de entrega: Setembro
 */
 
 #include <stdio.h>
@@ -327,7 +326,7 @@ int dis(posicao * inicio, posicao * atual)
         if((inicio->linha == atual->linha) && (inicio->col == atual->col))return 16;
         return lin + col;
 }
-//#define INSTALL_DEBUG
+
 posicao** selecionapais()
 {
     int n = (int)rand() % ((int)soma_pesos + 1);
@@ -349,12 +348,12 @@ posicao** selecionapais()
     return NULL;
 }
 
-void print_cromo(int j)
+void print_cromo(int j, int i)
 {
-    printf("Print Cromo PAI %d\n", j);
+    printf("Print Cromo%d\n", j);
     int k;
     for(k = 0; k < TAMCROMO; k++)
-        printf("C.%d.%d dado= %d\n", j + 1, k + 1, m_i_pop[i_geraativa - 1][j][k]->dado);
+        printf("C.%d.%d dado= %d\n", j + 1, k + 1, m_i_pop[i][j][k]->dado);
 }
 
 void reproduzpop(void) {
@@ -370,11 +369,15 @@ void reproduzpop(void) {
         {
             while(!((i_pai1_ = selecionapais()) != NULL));//go do
             while(!((i_pai2_ = selecionapais()) != NULL));//go do
+
             do
             {
                 if(i_pai2_ == i_pai1_)
                     while(!((i_pai2_ = selecionapais()) != NULL));//go do
-                else break;
+                else {
+                        break;
+                }
+
             }while(!(i_pai2_ != i_pai1_));
             pos_cromo(i_pai1_, i_geraativa - 1, &j1);//go do
             pos_cromo(i_pai2_, i_geraativa - 1, &j2);// go do
@@ -389,11 +392,7 @@ void reproduzpop(void) {
                     printf("\nBUUUUUG SAFAAADO NULL, dado1= %d, dado2= %d\n", (*i_pai1_)->dado, (*i_pai2_)->dado);
             }
         //debug_pais(i_pai1, i_pai2);// go to pegar bug
-        //print_cromo(j1);
-        //print_cromo(j2);
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
-
-        //exit(556);
 		//mutapais(j1);
 		//mutapais(j2);
 		//debug_muta(i_pai1);
@@ -433,15 +432,10 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
 	int static id_cruz = 0;
 	if(((double)rand() / RAND_MAX)<=TAXACRUZ) {
         int j_pai, k, l_mae;
-        int pt_corte_1 = 3, pt_corte_2 = 10;
-        /*while((pt_corte_1 = (rand() % TAMCROMO)) == 0 ||
-               pt_corte_1 == TAMCROMO - 1);
-        while((pt_corte_2 = (rand() % TAMCROMO)) == 0
-              || pt_corte_2 == TAMCROMO - 1
-                || pt_corte_2 < pt_corte_1 //go to  melhorar
-                || pt_corte_1 == pt_corte_2);*/
-        //if(pt_corte == 0 || pt_corte == TAMCROMO - 1)pt_corte = 2;
-        //printf("RANDOM CORTE_1 %d, RANDOM CORTE_2 %d\n\n", pt_corte_1, pt_corte_2);
+        int pt_corte_1, pt_corte_2;
+        pt_corte_1 = rand() % (TAMCROMO); //go to/ rand + 1.:BUG
+        pt_corte_2 = pt_corte_1 + rand() % (TAMCROMO  - pt_corte_1);
+        //printf("pt_corte 1= %d, pt_cprte 2 =%d\n", pt_corte_1, pt_corte_2);
         pos_cromo(pai_1, i_geraativa - 1, &j_pai);//go to
         pos_cromo(pai_2, i_geraativa - 1, &l_mae);//go to
         for(k = 0; k < TAMCROMO; k++) {
@@ -459,7 +453,6 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
         verifica_repeticoes(l_mae, id_cruz + 1, pt_corte_1, pt_corte_2);
         *j1 = id_cruz;
         *j2 = id_cruz + 1;
-        //printf("\n***Tirando repeticoes***\n");
         //debug_cruzamento(id_cruz, id_cruz + 1);
         #ifdef INSTALL_DEBUG
 
@@ -478,13 +471,13 @@ bool cruzapais(posicao** pai_1, posicao** pai_2, int* j1, int* j2) {
 
 void verifica_repeticoes(int j_pai, int j_filho, int pt_corte_1, int pt_corte_2)
 {
-    int k, k1;
+    int k, k1, w = 0;
     bool cked_1, cked_2;
     int jpai = j_pai, jfilho = j_filho;
     do{
         cked_1 = true;
         cked_2 = true;
-        for(k = TAMCROMO - 1; k > pt_corte_2; k--){
+        for(k = TAMCROMO - 1; k >= pt_corte_2; k--){
             for(k1 = pt_corte_1; k1 < pt_corte_2; k1++){
                 if(m_i_pop[i_geraativa][j_filho][k]->dado == m_i_pop[i_geraativa][j_filho][k1]->dado){//go do, comparar end ou dado?
                      m_i_pop[i_geraativa][j_filho][k] = m_i_pop[i_geraativa - 1][j_pai][k1];
