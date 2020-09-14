@@ -11,8 +11,8 @@ faixas_roleta fx_roleta[TAMPOP];
 posicao inicio = {4, 0, 25};
 posicao final = {1, 5, 12};
 int i_geraativa = 0; //geracao atual
-posicao * m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromossomos
-int m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
+posicao * m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromossomo
+unsigned int m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
 posicao ** indice_notas[TAMCROMO];
 float m_f_estataval[QTGERA][3]; //matriz de estatisticas: fitness m�nimo, m�ximo, m�dio
 posicao ** i_pai1; //primeiro pai selecionado
@@ -98,7 +98,7 @@ void avaliapop(void) {
 
     }
 
-    printf("\npesos totais %f\n\n", soma_pesos);
+    printf("\npesos totais %lf\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
     //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
@@ -160,7 +160,7 @@ void roleta()
 {
     int i;
     for(i = 0; i < TAMPOP; i++) {
-        fx_roleta[i].porc = m_f_popaval[i_geraativa][i] / soma_pesos;
+        fx_roleta[i].porc = (float)m_f_popaval[i_geraativa][i] / soma_pesos;
         fx_roleta[i].inf = i == 0 ? 0 : fx_roleta[i - 1].sup ;
         fx_roleta[i].sup = fx_roleta[i].inf + (fx_roleta[i].porc * soma_pesos);
         fx_roleta[i].p = indice_notas[(TAMPOP - 1) - i];
@@ -252,7 +252,7 @@ void reproduzpop(void) {
     i_geraativa += 1;
     posicao** i_pai1_;
     posicao** i_pai2_;
-    //ilitismo();
+    elitismo();
 
 	while(_i_novapop < TAMPOP) {
         do
@@ -283,8 +283,8 @@ void reproduzpop(void) {
             }
         //debug_pais(i_pai1, i_pai2);// go to pegar bug
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
-		//mutapais(j1);
-		//mutapais(j2);
+		mutapais(_i_novapop);
+		mutapais(_i_novapop + 1);
 		//debug_muta(i_pai1);
 		_i_novapop+=2;
 	}
@@ -451,9 +451,11 @@ void debug_muta(posicao** p1)
 
 void mutapais(int j) {
     if(((double)rand() / RAND_MAX) <= TAXAMUTA) {
-	    int num = 1 + (rand() % 15);
-	    int pt_mt = rand() % TAMCROMO;
-        m_i_pop[i_geraativa][j][pt_mt]->dado = num;
+	    int pt_mt_1 = rand() % TAMCROMO;
+	    int pt_mt_2 = rand() % TAMCROMO;
+	    posicao* aux = m_i_pop[i_geraativa][j][pt_mt_1];
+        m_i_pop[i_geraativa][j][pt_mt_1] = m_i_pop[i_geraativa][j][pt_mt_2];
+        m_i_pop[i_geraativa][j][pt_mt_2] = aux;
 	}
 }
 
