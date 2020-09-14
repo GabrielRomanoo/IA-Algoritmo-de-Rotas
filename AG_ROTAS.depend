@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1599610719 source:c:\github\trb1-ia-local\ag_rotas\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<time.h>
+	<math.h>
+
+1599841055 source:c:\github\local-ga\ag_rotas\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<time.h>
+	<math.h>
+
