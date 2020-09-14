@@ -1,1 +1,2 @@
-# TRB2-IA-AG-ROTAS
+# TRB1-I.A
+Trabalho de algorítimo genético
