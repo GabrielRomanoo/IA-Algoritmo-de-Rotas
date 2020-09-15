@@ -76,13 +76,15 @@ void avaliapop(void) {
     int j, k, i = 0, seq = 0, peso = 0, pontos = 0;
     soma_pesos = 0;
     for(j = 0; j < TAMPOP; j++) {
-        posicao * pos = m_i_pop[i_geraativa][j][0]; //cromo-init
         for(k = 0;  k < TAMCROMO; k++){
-             if(pos->dado == final.dado) {
+            posicao * pos = m_i_pop[i_geraativa][j][k]; //cromo-init
+            int dado = pos->dado;
+             if(dado == final.dado) {
                 float dist_linha = sqrt(pow((final.linha - inicio.linha), 2));
                 float dist_col = sqrt(pow(final.col - inicio.col, 2));
-                float passos = (dist_linha + dist_col + 1) * (dist_linha + dist_col + 1);
-                m_f_popaval[i_geraativa][j] += pow(passos - j + 1, 2);
+                float passos_min = (dist_linha + dist_col + 1);
+                m_f_popaval[i_geraativa][j] += pow(passos_min - k + 1, 2);
+                m_f_popaval[i_geraativa][j] += pow(reavalia(j, k), 2);
                 break;
              }
             if(k == 0){
@@ -116,21 +118,15 @@ void avaliapop(void) {
     //teste_gera(soma_pesos);
 }
 
-void reavalia()
+int reavalia(int j, int final_)
 {
-    int j, k, k1, ponto = 0;
-    for(j = 0; j < TAMPOP; j++) {
-        for(k = 0; k < TAMCROMO; k++){
-            if(m_i_pop[i_geraativa][j][k]->dado == 1)ponto++;
-            if(ponto < 8) {
-                printf("\nBOM\n\n");
-                for(k1 = 0; k1 < TAMCROMO; k1++)
-                    printf("G.%d, %d.%d [%d]\n",i_geraativa + 1, j + 1, k1 + 1, m_i_pop[i_geraativa][j][k1]->dado);
-                exit(444);
-            }
-            ponto = 0;
-        }
+    int k, ponto = 0;
+
+    for(k = 0; k < final_ - 1; k++){
+        if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) >= 3)ponto += 4;
+        ponto -= 5;
     }
+    return ponto < 0 ? 0 : ponto;
 }
 
 
@@ -221,9 +217,8 @@ int dis(posicao * inicio, posicao * atual)
                     i_geraativa, inicio->dado, inicio->linha, inicio->col,
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
-    if((inicio->linha == atual->linha) && (inicio->col == atual->col))return 16;
     if((int)pow(lin + col, 2) != 1)
-        return (int)pow(lin + col, 2);
+        return (int)pow(lin + col, 3);
     else return 0;
 }
 
