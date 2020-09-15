@@ -78,9 +78,17 @@ void avaliapop(void) {
     for(j = 0; j < TAMPOP; j++) {
         posicao * pos = m_i_pop[i_geraativa][j][0]; //cromo-init
         for(k = 0;  k < TAMCROMO; k++){
+             if(pos->dado == final.dado) {
+                float dist_linha = sqrt(pow((final.linha - inicio.linha), 2));
+                float dist_col = sqrt(pow(final.col - inicio.col, 2));
+                float passos = (dist_linha + dist_col + 1) * (dist_linha + dist_col + 1);
+                m_f_popaval[i_geraativa][j] += pow(passos - j + 1, 2);
+                break;
+             }
             if(k == 0){
-                peso = dis(&inicio, pos); //atribui nota
-                m_f_popaval[i_geraativa][j] += peso;
+                //peso = dis(&inicio, pos); //atribui nota
+                //m_f_popaval[i_geraativa][j] += peso;
+                m_f_popaval[i_geraativa][j] += 0;
             }
             else {
                 peso = dis(&final, pos); //atribui peso do final.
@@ -207,14 +215,16 @@ void debug(posicao p1, posicao p2)
 int dis(posicao * inicio, posicao * atual)
 {
 
-    int lin = (inicio->linha - atual->linha) * (inicio->linha - atual->linha);
-    int col = (inicio->col - atual->col) * (inicio->col - atual->col);
+    int lin = sqrt(pow((inicio->linha - atual->linha), 2));
+    int col = sqrt(pow((inicio->col - atual->col), 2));
      /*printf("\nG.%d, (p1.dado= %d, %d,%d) , (p2.dado= %d, %d.%d) .TT= %d\n",
                     i_geraativa, inicio->dado, inicio->linha, inicio->col,
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
     if((inicio->linha == atual->linha) && (inicio->col == atual->col))return 16;
-    return lin + col;
+    if((int)pow(lin + col, 2) != 1)
+        return (int)pow(lin + col, 2);
+    else return 0;
 }
 
 posicao** selecionapais()

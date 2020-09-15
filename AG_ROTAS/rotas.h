@@ -4,8 +4,8 @@
 
 #define TRUE 1
 #define FALSE 0
-#define QTGERA 1000
-#define TAMPOP 60
+#define QTGERA 500
+#define TAMPOP 120
 #define TAMCROMO 30
 #define TAXASEL 0.80
 #define TAXACRUZ 0.90
