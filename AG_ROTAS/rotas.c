@@ -77,7 +77,7 @@ void avaliapop(void) {
     unsigned long long int peso = 0, my_peso = 0, s, cromo_0, cromo_1;
     soma_pesos = 0;
     for(j = 0; j < TAMPOP; j++) {
-        for(k = 0;  k < TAMCROMO; k++){
+         for(k = 0;  k < TAMCROMO; k++){
             posicao * pos = m_i_pop[i_geraativa][j][k]; //cromo-init
             int dado = pos->dado;
              if(dado == final.dado) {
@@ -110,10 +110,10 @@ void avaliapop(void) {
         //exit(1);
         //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
         soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
-         s = soma_pesos;
        //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
         cromo_0 = m_f_popaval[i_geraativa][0];
     }
+    int gerat = i_geraativa;
     cromo_1 = m_f_popaval[i_geraativa][0];
     //nota_geracao[i_geraativa] = soma_pesos;
     printf("\npesos totais %llu\n", soma_pesos);
@@ -205,9 +205,10 @@ void pos_cromo(posicao** cromo, int g, int * j)
 void roleta()
 {
     int k;
+    int gerat = i_geraativa;
     for(k = 0; k < TAMPOP; k++) {
         unsigned long long soma_pesos_ = soma_pesos;
-        unsigned long long peso = m_f_popaval[i_geraativa][k];
+        unsigned long long peso = m_f_popaval[0][k];
         double a = (double)m_f_popaval[i_geraativa][k] / soma_pesos;
         fx_roleta[k].porc = a;
         fx_roleta[k].inf = k == 0 ? 0 : fx_roleta[k - 1].sup ;
