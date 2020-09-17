@@ -120,6 +120,7 @@ void avaliapop(void) {
 
     ordenar_cromo(m_f_popaval);
     //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
+    cromo_1 = m_f_popaval[i_geraativa][0];
 
     roleta(soma_pesos);
     //teste_roleta();
@@ -207,8 +208,8 @@ void roleta()
     int k;
     int gerat = i_geraativa;
     for(k = 0; k < TAMPOP; k++) {
-        unsigned long long soma_pesos_ = soma_pesos;
-        unsigned long long peso = m_f_popaval[0][k];
+        unsigned long long int soma_pesos_ = soma_pesos;
+        unsigned long long int peso = m_f_popaval[0][k];
         double a = (double)m_f_popaval[i_geraativa][k] / soma_pesos;
         fx_roleta[k].porc = a;
         fx_roleta[k].inf = k == 0 ? 0 : fx_roleta[k - 1].sup ;
