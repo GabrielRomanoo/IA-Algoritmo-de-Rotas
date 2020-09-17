@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "rotas.h"
 #include <time.h>
+#include "rotas.h"
 
 int main(void)
 {
@@ -36,5 +36,6 @@ srand(time(NULL));
 		if(checaparada()) break;
 	}
 	mostrapop();
+    //bests_cromo();
 	return 0;
 }

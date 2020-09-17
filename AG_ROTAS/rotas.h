@@ -8,7 +8,7 @@
 #define TAMPOP 60
 #define TAMCROMO 30
 #define TAXASEL 0.80
-#define TAXACRUZ 0.90
+#define TAXACRUZ 1
 #define TAXAMUTA 0.05
 #define LIN 5
 #define COL 6
@@ -46,7 +46,7 @@ void avaliapop(void);
 void ordenar_cromo(int v[][TAMPOP]);
 void pos_cromo(posicao** cromo, int g, int * j);
 void roleta();
-int dis(posicao * inicio, posicao * atual);
+unsigned long long int dis(posicao * inicio, posicao * atual);
 posicao** selecionapais();
 void reproduzpop(void);
 void elitismo();
@@ -55,4 +55,6 @@ void mutapais(int j);
 void verifica_repeticoes(int j_pai, int j_filho, int pt_corte_1, int pt_corte_2);
 int checaparada(void);
 void mostrapop(void);
+void motrar_nota_geracao();
+
 #endif
