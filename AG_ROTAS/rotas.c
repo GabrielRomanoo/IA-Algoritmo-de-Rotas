@@ -91,11 +91,18 @@ void avaliapop(void) {
                 //m_f_popaval[i_geraativa][j] += peso;
             }
              if(k != 0 && pos->dado == final.dado) {
-                unsigned long long p = pow(reavalia(j, k), 1);
+                unsigned long long p = reavalia(j, k);
+                int k1;
+                unsigned long long int peso_ = 0;
+
+                for(k1 = 0; k1 < k / 2; k1++){
+                peso_ += m_i_pop[i_geraativa][k][j]->dado != inicio.dado ? pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 1) : 1;
+                }
+
                 //m_f_popaval[i_geraativa][j] += pow(passos_min() - k + 1, 1);
-                //m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 1);
+                m_f_popaval[i_geraativa][j] += peso_;
                //m_f_popaval[i_geraativa][j] += pow(reavalia(j, k), 1);
-                //break;
+                break;
             }
 
         }
@@ -148,9 +155,9 @@ unsigned long long int reavalia(int _final, int j)
     for(k = 0; k < _final / 2; k++){
         peso += pow(dis(&inicio, m_i_pop[i_geraativa][j][k]), 1);
     }
-    for(; k < _final; k++){
-       peso += dis(&final, m_i_pop[i_geraativa][j][k]);
-    }
+    //for(; k < _final; k++){
+      // peso += dis(&final, m_i_pop[i_geraativa][j][k]);
+
     return (peso == 0) ? 1 : peso * 1;
 }
 
@@ -251,6 +258,7 @@ void debug(posicao p1, posicao p2)
 
 unsigned long long int dis(posicao * inicio, posicao * atual)
 {
+
 
     unsigned int lin = sqrt(pow((inicio->linha - atual->linha), 2));
     unsigned int col = sqrt(pow((inicio->col - atual->col), 2));
