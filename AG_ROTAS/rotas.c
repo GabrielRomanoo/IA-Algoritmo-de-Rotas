@@ -100,8 +100,8 @@ void avaliapop(void) {
                 //m_f_popaval[i_geraativa][j] += peso;
 
             }
-            my_peso = m_f_popaval[i_geraativa][j];
-            printf("peso= %llu\n", my_peso);
+            //my_peso = m_f_popaval[i_geraativa][j];
+            //printf("peso= %llu\n", my_peso);
         }
         //m_f_popaval[i_geraativa][j] += pow(reavalia(j, TAMCROMO), 1);
         //m_f_popaval[i_geraativa][j] += pow(reavalia_final(j, TAMCROMO), 2);
@@ -111,19 +111,18 @@ void avaliapop(void) {
         //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
         soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
        //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
-        cromo_0 = m_f_popaval[i_geraativa][0];
+        //cromo_0 = m_f_popaval[i_geraativa][0];
     }
-    int gerat = i_geraativa;
-    cromo_1 = m_f_popaval[i_geraativa][0];
+    //cromo_0 = m_f_popaval[i_geraativa][0];
+    //cromo_1 = m_f_popaval[i_geraativa][0];
     //nota_geracao[i_geraativa] = soma_pesos;
     printf("\npesos totais %llu\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
-    //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
-    cromo_1 = m_f_popaval[i_geraativa][0];
-
+    teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
     roleta(soma_pesos);
-    //teste_roleta();
+    teste_roleta();
+        exit(1);
     //reavalia();
     //teste_gera(soma_pesos);
 }
@@ -156,7 +155,7 @@ int reavalia(int j, int final_)
 }
 
 
-void ordenar_cromo(int v[][TAMPOP])
+void ordenar_cromo(unsigned long long int v[][TAMPOP])
 {
     int i, j, x;
     posicao * p;
@@ -206,17 +205,12 @@ void pos_cromo(posicao** cromo, int g, int * j)
 void roleta()
 {
     int k;
-    int gerat = i_geraativa;
     for(k = 0; k < TAMPOP; k++) {
-        unsigned long long int soma_pesos_ = soma_pesos;
-        unsigned long long int peso = m_f_popaval[0][k];
-        double a = (double)m_f_popaval[i_geraativa][k] / soma_pesos;
-        fx_roleta[k].porc = a;
+        fx_roleta[k].porc = (double)m_f_popaval[i_geraativa][k] / soma_pesos;;
         fx_roleta[k].inf = k == 0 ? 0 : fx_roleta[k - 1].sup ;
         fx_roleta[k].sup = fx_roleta[k].inf + (fx_roleta[k].porc * soma_pesos);
         fx_roleta[k].p = indice_notas[(TAMPOP - 1) - k];
         //printf("dado=[%d]\n", fx_roleta[i].p->dado);
-
     }
 }
 
@@ -246,7 +240,7 @@ void teste_gera()
             posicao * pos = m_i_pop[i_geraativa][i][k];
             printf("%d.%d [%d]\n", i + 1, k + 1, pos->dado);
         }
-        printf("Total= %d, pct = %f\n\n", m_f_popaval[i_geraativa][j], m_f_popaval[i_geraativa][j] / soma_pesos);
+        printf("Total= %d, pct = %g\n\n", m_f_popaval[i_geraativa][j], (double)m_f_popaval[i_geraativa][j] / soma_pesos);
     }
 }
 

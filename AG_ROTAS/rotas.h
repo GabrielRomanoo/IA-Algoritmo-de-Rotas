@@ -21,9 +21,9 @@ typedef struct {
 }posicao;
 
 typedef struct {
-    float inf;
-    float sup;
-    float porc;
+    double inf;
+    double sup;
+    double porc;
     posicao** p;
 }faixas_roleta;
 
@@ -43,7 +43,7 @@ void init_mapa();
 void criapop(void);
 void embaralha_alelos(int i);
 void avaliapop(void);
-void ordenar_cromo(int v[][TAMPOP]);
+void ordenar_cromo(unsigned long long int v[][TAMPOP]);
 void pos_cromo(posicao** cromo, int g, int * j);
 void roleta();
 unsigned long long int dis(posicao * inicio, posicao * atual);
