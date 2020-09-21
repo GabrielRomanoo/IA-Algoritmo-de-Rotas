@@ -56,5 +56,6 @@ void verifica_repeticoes(int j_pai, int j_filho, int pt_corte_1, int pt_corte_2)
 int checaparada(void);
 void mostrapop(void);
 void motrar_nota_geracao();
+unsigned long long int reavalia(int _final, int j);
 
 #endif

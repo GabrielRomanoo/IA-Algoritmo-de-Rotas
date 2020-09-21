@@ -79,18 +79,9 @@ void avaliapop(void) {
     for(j = 0; j < TAMPOP; j++) {
          for(k = 0;  k < TAMCROMO; k++){
             posicao * pos = m_i_pop[i_geraativa][j][k]; //cromo-init
-            int dado = pos->dado;
-             if(dado == final.dado) {
-                float dist_linha = sqrt(pow((final.linha - inicio.linha), 2));
-                float dist_col = sqrt(pow(final.col - inicio.col, 2));
-                float passos_min = (dist_linha + dist_col + 1);
-                //m_f_popaval[i_geraativa][j] += pow(passos_min - k + 1, 2);
-                //m_f_popaval[i_geraativa][j] += pow(reavalia(j, k), 2);
-                //break;
-             }
             if(k == 0){
-                peso = dis(&inicio, pos); //atribui nota
-                m_f_popaval[i_geraativa][j] += peso;
+                peso = dis(&inicio, m_i_pop[i_geraativa][j][0]); //atribui nota
+                m_f_popaval[i_geraativa][j] = peso;
                 //m_f_popaval[i_geraativa][j] += 0;
             }
             else {
@@ -98,12 +89,17 @@ void avaliapop(void) {
                 m_f_popaval[i_geraativa][j] += peso;
                 //peso = dis(&final, pos); //atribui peso do final.
                 //m_f_popaval[i_geraativa][j] += peso;
-
             }
-            //my_peso = m_f_popaval[i_geraativa][j];
-            //printf("peso= %llu\n", my_peso);
+             if(k != 0 && pos->dado == final.dado) {
+                unsigned long long p = pow(reavalia(j, k), 1);
+                //m_f_popaval[i_geraativa][j] += pow(passos_min() - k + 1, 1);
+                //m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 1);
+               //m_f_popaval[i_geraativa][j] += pow(reavalia(j, k), 1);
+                //break;
+            }
+
         }
-        //m_f_popaval[i_geraativa][j] += pow(reavalia(j, TAMCROMO), 1);
+        unsigned int val = m_f_popaval[i_geraativa][j];
         //m_f_popaval[i_geraativa][j] += pow(reavalia_final(j, TAMCROMO), 2);
         indice_notas[j] = &(m_i_pop[i_geraativa][j][0]); //guarda o endereco do cromosso
        // printf("/nMaior dado no Cromo %d eh : %d\n", j, normaliza_pesos(j));
@@ -111,23 +107,27 @@ void avaliapop(void) {
         //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
         soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
        //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
-        //cromo_0 = m_f_popaval[i_geraativa][0];
     }
-    //cromo_0 = m_f_popaval[i_geraativa][0];
-    //cromo_1 = m_f_popaval[i_geraativa][0];
-    //nota_geracao[i_geraativa] = soma_pesos;
+
     printf("\npesos totais %llu\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
-    teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
+    //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
     roleta(soma_pesos);
-    teste_roleta();
-        exit(1);
+    //teste_roleta();
     //reavalia();
     //teste_gera(soma_pesos);
+
 }
 
-int reavalia_final(int j, int final_)
+int passos_min()
+{
+    float dist_linha = sqrt(pow((final.linha - inicio.linha), 2));
+    float dist_col = sqrt(pow(final.col - inicio.col, 2));
+    return (dist_linha + dist_col + 1);
+}
+
+int reavalia_final(int final_, int j)
 {
     int k;
     float dist_linha = sqrt(pow((final.linha - inicio.linha), 2));
@@ -140,18 +140,18 @@ int reavalia_final(int j, int final_)
     return 0;
 }
 
-int reavalia(int j, int final_)
+unsigned long long int reavalia(int _final, int j)
 {
-    int k, peso = 0;
 
-    for(k = 0; k < TAMCROMO / 2; k++){
-        peso += dis(&inicio, m_i_pop[i_geraativa][j][k]) * 2;
+    int k;
+    unsigned long long int peso = 0;
+    for(k = 0; k < _final / 2; k++){
+        peso += pow(dis(&inicio, m_i_pop[i_geraativa][j][k]), 1);
     }
-    for(k = TAMCROMO / 2; k < TAMCROMO; k++){
-        peso += dis(&final, m_i_pop[i_geraativa][j][k]);
+    for(; k < _final; k++){
+       peso += dis(&final, m_i_pop[i_geraativa][j][k]);
     }
-
-    return peso;
+    return (peso == 0) ? 1 : peso * 1;
 }
 
 
@@ -259,7 +259,7 @@ unsigned long long int dis(posicao * inicio, posicao * atual)
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
     if(lin + col != 1)
-        return (int)pow(lin + col, 3);
+        return (int)pow(lin + col, 4);
     else return 0;
 }
 
