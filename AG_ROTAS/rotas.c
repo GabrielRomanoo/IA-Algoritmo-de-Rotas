@@ -86,27 +86,27 @@ void avaliapop(void) {
             }
             else {
                 peso = dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);//funcao de custo
+                peso += dis(&final, pos); //atribui peso do final.
+                peso += dis(&inicio, pos); //atribui peso do final.
                 m_f_popaval[i_geraativa][j] += peso;
-                //peso = dis(&final, pos); //atribui peso do final.
                 //m_f_popaval[i_geraativa][j] += peso;
             }
              if(k != 0 && pos->dado == final.dado) {
-                unsigned long long p = reavalia(j, k);
                 int k1;
                 unsigned long long int peso_ = 0;
-
-                for(k1 = 0; k1 < k / 2; k1++){
-                peso_ += m_i_pop[i_geraativa][k][j]->dado != inicio.dado ? pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 1) : 1;
-                }
+                //for(k1 = 0; k1 < k / 2; k1++){
+                //peso_ += pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 2);
+                //}
 
                 //m_f_popaval[i_geraativa][j] += pow(passos_min() - k + 1, 1);
-                m_f_popaval[i_geraativa][j] += peso_;
+                //m_f_popaval[i_geraativa][j] += peso_;
                //m_f_popaval[i_geraativa][j] += pow(reavalia(j, k), 1);
                 break;
             }
 
         }
-        unsigned int val = m_f_popaval[i_geraativa][j];
+        unsigned long long int val = m_f_popaval[i_geraativa][j];
+        int g = i_geraativa;
         //m_f_popaval[i_geraativa][j] += pow(reavalia_final(j, TAMCROMO), 2);
         indice_notas[j] = &(m_i_pop[i_geraativa][j][0]); //guarda o endereco do cromosso
        // printf("/nMaior dado no Cromo %d eh : %d\n", j, normaliza_pesos(j));
@@ -122,6 +122,8 @@ void avaliapop(void) {
     //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
     roleta(soma_pesos);
     //teste_roleta();
+    //exit(255);
+
     //reavalia();
     //teste_gera(soma_pesos);
 
@@ -215,7 +217,7 @@ void roleta()
     for(k = 0; k < TAMPOP; k++) {
         fx_roleta[k].porc = (double)m_f_popaval[i_geraativa][k] / soma_pesos;;
         fx_roleta[k].inf = k == 0 ? 0 : fx_roleta[k - 1].sup ;
-        fx_roleta[k].sup = fx_roleta[k].inf + (fx_roleta[k].porc * soma_pesos);
+        fx_roleta[k].sup = fx_roleta[k].inf + (fx_roleta[k].porc);
         fx_roleta[k].p = indice_notas[(TAMPOP - 1) - k];
         //printf("dado=[%d]\n", fx_roleta[i].p->dado);
     }
@@ -266,15 +268,14 @@ unsigned long long int dis(posicao * inicio, posicao * atual)
                     i_geraativa, inicio->dado, inicio->linha, inicio->col,
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
-    if(lin + col != 1)
-        return (int)pow(lin + col, 4);
-    else return 0;
+    return pow(lin + col, 4);
 }
+
 
 posicao** selecionapais()
 {
-    int n = (int)rand() % ((int)soma_pesos + 1);
     int j, k;
+    double n = rand() / (double)RAND_MAX;
     for(int i = 0; i < TAMPOP; i++) {
         if(n > fx_roleta[i].inf && n <= fx_roleta[i].sup) {
             #ifdef INSTALL_DEBUG

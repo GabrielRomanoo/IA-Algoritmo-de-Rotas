@@ -1,15 +1,15 @@
 /*
  * AlgoritmoGenetico.c
  *
- * Programa que simula um algoritmo genÃ©tico.
+ * Programa que simula um algoritmo genético.
  *
- * Felipe Ferreira Nascimento (CiÃªncia da ComputaÃ§Ã£o)
- * Gabriel Romano Godoi Pereira (CiÃªncia da ComputaÃ§Ã£o)
- * Jaime Mathias de Lara Bueno (CiÃªncia da ComputaÃ§Ã£o)
- * Marcus Vinicius de Souza Olimpio da Silva (CiÃªncia da ComputaÃ§Ã£o)
- * Willy Pestana Filho (CiÃªncia da ComputaÃ§Ã£o)
+ * Felipe Ferreira Nascimento (Ciência da Computação)
+ * Gabriel Romano Godoi Pereira (Ciência da Computação)
+ * Jaime Mathias de Lara Bueno (Ciência da Computação)
+ * Marcus Vinicius de Souza Olimpio da Silva (Ciência da Computação)
+ * Willy Pestana Filho (Ciência da Computação)
  *
- * Disciplina: InteligÃªncia Artificial II
+ * Disciplina: Inteligência Artificial II
  *
  * Professor: Marcio Luiz Piva
  *
@@ -23,7 +23,7 @@
 
 int main(void)
 {
-srand(time(NULL));
+srand((unsigned long long)time(NULL) );
 	init_mapa();
 	print_mapa();
 	criapop();
