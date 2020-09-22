@@ -73,8 +73,8 @@ void embaralha_alelos(int i)
 }
 
 void avaliapop(void) {
-    int j, k, i = 0, seq = 0, pontos = 0;
-    unsigned long long int peso = 0, my_peso = 0, s, cromo_0, cromo_1;
+    int j, k;
+    unsigned long long int peso = 0;
     soma_pesos = 0;
     for(j = 0; j < TAMPOP; j++) {
          for(k = 0;  k < TAMCROMO; k++){
@@ -91,29 +91,26 @@ void avaliapop(void) {
                 m_f_popaval[i_geraativa][j] += peso;
                 //m_f_popaval[i_geraativa][j] += peso;
             }
+                /*Para reavaliacoes*/
              if(k != 0 && pos->dado == final.dado) {
                 int k1;
                 unsigned long long int peso_ = 0;
-                //for(k1 = 0; k1 < k / 2; k1++){
-                //peso_ += pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 2);
-                //}
-
-                //m_f_popaval[i_geraativa][j] += pow(passos_min() - k + 1, 1);
-                //m_f_popaval[i_geraativa][j] += peso_;
-               //m_f_popaval[i_geraativa][j] += pow(reavalia(j, k), 1);
+                for(k1 = 0; k1 < k / 2; k1++){
+                    peso_ += pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 3);
+                }
+                for(; k1 <= k; k1++){
+                    peso_ += pow(dis(&final, m_i_pop[i_geraativa][j][k1]), 2);
+                }
+                m_f_popaval[i_geraativa][j] += peso_;
+               // m_f_popaval[i_geraativa][j] += m_f_popaval[i_geraativa][j] - pow(k, 2);
                 break;
             }
 
         }
-        unsigned long long int val = m_f_popaval[i_geraativa][j];
-        int g = i_geraativa;
         //m_f_popaval[i_geraativa][j] += pow(reavalia_final(j, TAMCROMO), 2);
         indice_notas[j] = &(m_i_pop[i_geraativa][j][0]); //guarda o endereco do cromosso
-       // printf("/nMaior dado no Cromo %d eh : %d\n", j, normaliza_pesos(j));
-        //exit(1);
-        //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
         soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
-       //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+        printf("[Cromo %d, dado= %d] peso= %llu\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
     }
 
     printf("\npesos totais %llu\n", soma_pesos);
@@ -268,7 +265,7 @@ unsigned long long int dis(posicao * inicio, posicao * atual)
                     i_geraativa, inicio->dado, inicio->linha, inicio->col,
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
-    return pow(lin + col, 4);
+    return pow(lin + col, 2);
 }
 
 
