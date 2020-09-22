@@ -83,7 +83,7 @@ unsigned long long int dis(posicao * inicio, posicao * atual)
                     i_geraativa, inicio->dado, inicio->linha, inicio->col,
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
-    return pow(lin + col, 2);
+    return pow(lin + col, 3);
 }
 
 void avaliapop(void) {
@@ -118,7 +118,7 @@ void avaliapop(void) {
                 }*/
                 m_f_popaval[i_geraativa][j] += peso_;
                 m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 2);
-               //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 2) - m_f_popaval[i_geraativa][j], 2)), 2);
+               //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 4) - m_f_popaval[i_geraativa][j], 2)), 1);
                 break;
             }
 
@@ -142,26 +142,17 @@ void avaliapop(void) {
 
 }
 
-int passos_min()
-{
-    float dist_linha = sqrt(pow((final.linha - inicio.linha), 2));
-    float dist_col = sqrt(pow(final.col - inicio.col, 2));
-    return (dist_linha + dist_col + 1);
-}
 
 unsigned long long int reavalia(int _final, int j)
 {
-    int k;
     unsigned long long int peso = 0;
-    peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? rand() % m_f_popaval[i_geraativa][j] + 1 : peso;
-    return peso;
-    for(k = 0; k <= _final; k++){
-
+    int k;
+    return peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? rand() % m_f_popaval[i_geraativa][j] + 1 : peso;
+    for(k = 0; k < _final; k++){
+        if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) != 1)
+            peso += rand() % m_f_popaval[i_geraativa][j] + 1;
     }
-    //for(; k < _final; k++){
-      // peso += dis(&final, m_i_pop[i_geraativa][j][k]);
-
-    return (peso == 0) ? 1 : peso * 1;
+    return peso;
 }
 
 
