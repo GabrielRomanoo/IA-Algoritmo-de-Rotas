@@ -72,6 +72,20 @@ void embaralha_alelos(int i)
     }
 }
 
+
+unsigned long long int dis(posicao * inicio, posicao * atual)
+{
+
+
+    unsigned int lin = sqrt(pow((inicio->linha - atual->linha), 2));
+    unsigned int col = sqrt(pow((inicio->col - atual->col), 2));
+     /*printf("\nG.%d, (p1.dado= %d, %d,%d) , (p2.dado= %d, %d.%d) .TT= %d\n",
+                    i_geraativa, inicio->dado, inicio->linha, inicio->col,
+                    atual->dado, atual->linha, atual->col, lin + col);
+                    //exit(111);*/
+    return pow(lin + col, 2);
+}
+
 void avaliapop(void) {
     int j, k;
     unsigned long long int peso = 0;
@@ -95,14 +109,16 @@ void avaliapop(void) {
              if(k != 0 && pos->dado == final.dado) {
                 int k1;
                 unsigned long long int peso_ = 0;
-                for(k1 = 0; k1 < k / 2; k1++){
-                    peso_ += pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 3);
+                for(k1 = 0; k1 <= k ; k1++){
+                    peso_ += pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 1);
                 }
+                /*
                 for(; k1 <= k; k1++){
-                    peso_ += pow(dis(&final, m_i_pop[i_geraativa][j][k1]), 2);
-                }
+                    peso_ += pow(dis(&final, m_i_pop[i_geraativa][j][k1]), 1);
+                }*/
                 m_f_popaval[i_geraativa][j] += peso_;
-               // m_f_popaval[i_geraativa][j] += m_f_popaval[i_geraativa][j] - pow(k, 2);
+                m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 2);
+               //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 2) - m_f_popaval[i_geraativa][j], 2)), 2);
                 break;
             }
 
@@ -110,10 +126,10 @@ void avaliapop(void) {
         //m_f_popaval[i_geraativa][j] += pow(reavalia_final(j, TAMCROMO), 2);
         indice_notas[j] = &(m_i_pop[i_geraativa][j][0]); //guarda o endereco do cromosso
         soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
-        printf("[Cromo %d, dado= %d] peso= %llu\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
+        //printf("[Cromo %d, dado= %d] peso= %llu\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
     }
 
-    printf("\npesos totais %llu\n", soma_pesos);
+    //printf("\npesos totais %llu\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
     //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
@@ -133,26 +149,14 @@ int passos_min()
     return (dist_linha + dist_col + 1);
 }
 
-int reavalia_final(int final_, int j)
-{
-    int k;
-    float dist_linha = sqrt(pow((final.linha - inicio.linha), 2));
-    float dist_col = sqrt(pow(final.col - inicio.col, 2));
-    float passos_min = (dist_linha + dist_col + 1);
-
-    for(k = 0; k < TAMCROMO - 1; k++){
-        if(m_i_pop[i_geraativa][j][k]->dado == final.dado && k + 1 < passos_min)return rand() % TAMCROMO;
-    }
-    return 0;
-}
-
 unsigned long long int reavalia(int _final, int j)
 {
-
     int k;
     unsigned long long int peso = 0;
-    for(k = 0; k < _final / 2; k++){
-        peso += pow(dis(&inicio, m_i_pop[i_geraativa][j][k]), 1);
+    peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? rand() % m_f_popaval[i_geraativa][j] + 1 : peso;
+    return peso;
+    for(k = 0; k <= _final; k++){
+
     }
     //for(; k < _final; k++){
       // peso += dis(&final, m_i_pop[i_geraativa][j][k]);
@@ -254,20 +258,6 @@ void debug(posicao p1, posicao p2)
 {
     printf("[%d(%d, %d)], [%d(%d, %d)], dist = %d", p1.dado, p1.linha, p1.col, p2.dado, p2.linha, p2.col, dis(&p1, &p2));
 }
-
-unsigned long long int dis(posicao * inicio, posicao * atual)
-{
-
-
-    unsigned int lin = sqrt(pow((inicio->linha - atual->linha), 2));
-    unsigned int col = sqrt(pow((inicio->col - atual->col), 2));
-     /*printf("\nG.%d, (p1.dado= %d, %d,%d) , (p2.dado= %d, %d.%d) .TT= %d\n",
-                    i_geraativa, inicio->dado, inicio->linha, inicio->col,
-                    atual->dado, atual->linha, atual->col, lin + col);
-                    //exit(111);*/
-    return pow(lin + col, 2);
-}
-
 
 posicao** selecionapais()
 {
