@@ -140,7 +140,7 @@ unsigned long long int reavalia(int _final, int j)
 {
     unsigned long long int peso = 0;
     int k;
-    peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j] + 1) / 30 : peso;;
+    return peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j] + 1) / 30 : peso;;
     for(k = 0; k < _final; k++){
         //if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) != 1)
             peso += pow(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]), 1);
