@@ -1,6 +1,7 @@
 #ifndef _ROTA_H
 #define _ROTA_H
 #include <stdbool.h>
+#include <gmp.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -20,12 +21,6 @@ typedef struct {
     int dado;
 }posicao;
 
-typedef struct {
-    double inf;
-    double sup;
-    double porc;
-    posicao** p;
-}faixas_roleta;
 
 #ifdef INSTALL_DEBUG
 void print_mapa();
@@ -38,7 +33,7 @@ void teste_unit_cromo(posicao** p1, posicao** p2, posicao** f1, posicao** f2, in
 void debug_cruzamento(int j, int l);
 void debug_muta(posicao** p1);
 #endif // INSTALL_DEBUG
-
+void init_var_pt_flt();
 void init_mapa();
 void criapop(void);
 void embaralha_alelos(int i);
