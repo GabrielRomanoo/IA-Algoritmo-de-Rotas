@@ -109,10 +109,6 @@ void avaliapop(void) {
              if(k != 0 && pos->dado == final.dado) {
                 int k1;
                 unsigned long long int peso_ = 0;
-                for(k1 = 0; k1 <= k ; k1++){
-                    peso_ += pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 1);
-                }
-
                 m_f_popaval[i_geraativa][j] += peso_;
                 m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 2);
                //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 2) - m_f_popaval[i_geraativa][j], 2)), 2);
@@ -144,10 +140,11 @@ unsigned long long int reavalia(int _final, int j)
 {
     unsigned long long int peso = 0;
     int k;
-    return peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? rand() % m_f_popaval[i_geraativa][j] + 1 : peso;
+    peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j] + 1) / 30 : peso;;
     for(k = 0; k < _final; k++){
-        if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) != 1)
-            peso += rand() % m_f_popaval[i_geraativa][j] + 1;
+        //if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) != 1)
+            peso += pow(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]), 1);
+            //peso += rand() % m_f_popaval[i_geraativa][j] + 1; // go do
     }
     return peso;
 }
@@ -204,7 +201,7 @@ void roleta()
 {
     int k;
     for(k = 0; k < TAMPOP; k++) {
-        fx_roleta[k].porc = (double)m_f_popaval[i_geraativa][k] / soma_pesos;;
+        fx_roleta[k].porc = (double)m_f_popaval[i_geraativa][k] / soma_pesos;
         fx_roleta[k].inf = k == 0 ? 0 : fx_roleta[k - 1].sup ;
         fx_roleta[k].sup = fx_roleta[k].inf + (fx_roleta[k].porc);
         fx_roleta[k].p = indice_notas[(TAMPOP - 1) - k];
@@ -222,7 +219,7 @@ void teste_roleta()
            posicao * pos = m_i_pop[i_geraativa][j][k];
             printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
         }
-        printf("porc= %f, lim_inf= %f, lim_sup= %f\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
+        printf("porc= %g, lim_inf= %g, lim_sup= %g\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
     }
 }
 
