@@ -112,13 +112,10 @@ void avaliapop(void) {
                 for(k1 = 0; k1 <= k ; k1++){
                     peso_ += pow(dis(&inicio, m_i_pop[i_geraativa][j][k1]), 1);
                 }
-                /*
-                for(; k1 <= k; k1++){
-                    peso_ += pow(dis(&final, m_i_pop[i_geraativa][j][k1]), 1);
-                }*/
+
                 m_f_popaval[i_geraativa][j] += peso_;
                 m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 2);
-               //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 4) - m_f_popaval[i_geraativa][j], 2)), 1);
+               //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 2) - m_f_popaval[i_geraativa][j], 2)), 2);
                 break;
             }
 
