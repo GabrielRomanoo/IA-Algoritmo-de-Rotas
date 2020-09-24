@@ -58,5 +58,6 @@ int checaparada(void);
 void mostrapop(void);
 void motrar_nota_geracao();
 unsigned long long int reavalia(int _final, int j);
+unsigned long long int vizinhanca(int lin, int col, int j, int k);
 
 #endif

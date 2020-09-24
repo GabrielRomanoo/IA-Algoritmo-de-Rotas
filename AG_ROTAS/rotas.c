@@ -4,6 +4,7 @@
 #include <math.h>
 #include "rotas.h"
 
+#define POT 3
 /*
  * Variaveis Globais
  */
@@ -109,10 +110,9 @@ void avaliapop(void) {
              if(k != 0 && pos->dado == final.dado) {
                 int k1;
                 unsigned long long int peso_ = 0;
-                m_f_popaval[i_geraativa][j] += peso_;
                 m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 2);
                //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 2) - m_f_popaval[i_geraativa][j], 2)), 2);
-                break;
+                //break;
             }
 
         }
@@ -140,15 +140,58 @@ unsigned long long int reavalia(int _final, int j)
 {
     unsigned long long int peso = 0;
     int k;
-    return peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j] + 1) / 30 : peso;;
+    peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j] + 1) / 10 : peso;
     for(k = 0; k < _final; k++){
-        //if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) != 1)
-            peso += pow(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]), 1);
-            //peso += rand() % m_f_popaval[i_geraativa][j] + 1; // go do
+        peso += vizinhanca(m_i_pop[i_geraativa][j][k]->linha, m_i_pop[i_geraativa][j][k]->col, j, k + 1);
     }
     return peso;
 }
 
+unsigned long long int vizinhanca(int linha, int col, int j, int k)
+{
+    unsigned long int peso = 0;
+    if((linha > 0 && col > 0) && linha < LIN - 1 && col < COL - 1) {
+        peso +=  sqrt(pow(dis(&matriz[linha][col + 1], m_i_pop[i_geraativa][j][k]), 2));
+        peso +=  sqrt(pow(dis(&matriz[linha][col - 1], m_i_pop[i_geraativa][j][k]), 2));
+        peso +=  sqrt(pow(dis(&matriz[linha + 1][col], m_i_pop[i_geraativa][j][k]), 2));
+        peso +=  sqrt(pow(dis(&matriz[linha - 1][col], m_i_pop[i_geraativa][j][k]), 2));
+    } else if((linha == 0 && col > 0) && col < COL - 1 ) {
+                peso +=  sqrt(pow(dis(&matriz[linha][col + 1], m_i_pop[i_geraativa][j][k]), 2));
+                peso +=  sqrt(pow(dis(&matriz[linha][col - 1], m_i_pop[i_geraativa][j][k]), 2));
+                peso +=  sqrt(pow(dis(&matriz[linha + 1][col], m_i_pop[i_geraativa][j][k]), 2));
+            } else if(linha > 0 && col == 0 && linha < LIN - 1) {
+                        peso +=  sqrt(pow(dis(&matriz[linha +  1][col], m_i_pop[i_geraativa][j][k]), 2));
+                        peso +=  sqrt(pow(dis(&matriz[linha -  1][col], m_i_pop[i_geraativa][j][k]), 2));
+                        peso +=  sqrt(pow(dis(&matriz[linha][col + 1], m_i_pop[i_geraativa][j][k]), 2));
+                    }
+                    else if(linha == 0 && col == 0) {
+                        peso +=  sqrt(pow(dis(&matriz[linha + 1][col], m_i_pop[i_geraativa][j][k]), 2));
+                        peso +=  sqrt(pow(dis(&matriz[linha][col + 1], m_i_pop[i_geraativa][j][k]), 2));
+                        }
+                        else if(linha > 0 && col == COL - 1) {
+                                peso +=  sqrt(pow(dis(&matriz[linha +  1][col], m_i_pop[i_geraativa][j][k]), 2));
+                                peso +=  sqrt(pow(dis(&matriz[linha -  1][col], m_i_pop[i_geraativa][j][k]), 2));
+                                peso +=  sqrt(pow(dis(&matriz[linha][col - 1], m_i_pop[i_geraativa][j][k]), 2));
+                            }
+                            else if(linha == 0 && col == COL - 1) {
+                                    peso +=  sqrt(pow(dis(&matriz[linha + 1][col], m_i_pop[i_geraativa][j][k]), 2));
+                                    peso +=  sqrt(pow(dis(&matriz[linha][col - 1], m_i_pop[i_geraativa][j][k]), 2));
+                                }
+                                else if((linha == LIN - 1 && col > 0) && col < COL - 1){
+                                        peso +=  sqrt(pow(dis(&matriz[linha][col - 1], m_i_pop[i_geraativa][j][k]), 2));
+                                        peso +=  sqrt(pow(dis(&matriz[linha][col + 1], m_i_pop[i_geraativa][j][k]), 2));
+                                        peso +=  sqrt(pow(dis(&matriz[linha - 1][col], m_i_pop[i_geraativa][j][k]), 2));
+                                    }
+                                    else if(linha == LIN - 1 && col == 0){
+                                            peso +=  sqrt(pow(dis(&matriz[linha - 1][col], m_i_pop[i_geraativa][j][k]), 2));
+                                            peso +=  sqrt(pow(dis(&matriz[linha][col + 1], m_i_pop[i_geraativa][j][k]), 2));
+                                    }
+                                        else if(linha == LIN - 1 && col == COL - 1){
+                                            peso +=  sqrt(pow(dis(&matriz[linha - 1][col], m_i_pop[i_geraativa][j][k]), 2));
+                                            peso +=  sqrt(pow(dis(&matriz[linha][col  - 1], m_i_pop[i_geraativa][j][k]), 2));
+                                        }
+    return peso;
+}
 
 void ordenar_cromo(unsigned long long int v[][TAMPOP])
 {
