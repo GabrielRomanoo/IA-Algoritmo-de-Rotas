@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <time.h>
 #include <math.h>
 #include "rotas.h"
@@ -529,4 +530,17 @@ void mostrapop(void) {
         printf("\n");
     }
 	return;
+}
+
+void print_arq_rota()
+{
+    int k;
+    FILE *ptr_arq;
+    ptr_arq = fopen("result_rota.txt","w");
+    fprintf(ptr_arq , "%s", "v\n");
+    for(k = 0; m_i_pop[QTGERA - 1][TAMPOP - 1][k]->dado != final.dado; k++) {
+        fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][TAMPOP - 1][k]->dado);
+    }
+    fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][TAMPOP - 1][k]->dado);
+    fclose(ptr_arq);
 }

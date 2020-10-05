@@ -37,5 +37,6 @@ srand((unsigned long long)time(NULL) );
 	}
 	mostrapop();
     //bests_cromo();
+    print_arq_rota();
 	return 0;
 }
