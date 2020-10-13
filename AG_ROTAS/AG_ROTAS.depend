@@ -30,22 +30,22 @@
 1600036391 c:\github\trb2-ia\local-ga\ag_rotas\rotas.h
 	<stdbool.h>
 
-1601920391 source:c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\main.c
+1602631936 source:c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\main.c
 	<stdio.h>
 	<stdlib.h>
 	<stdbool.h>
 	<time.h>
 	"rotas.h"
 
-1601918337 c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.h
+1602632444 c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.h
 	<stdbool.h>
 
 1600879579 D
 
-1601921155 source:c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.c
+1602632015 source:c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.c
+	<stdio.h>
 	<stdlib.h>
 	<stdbool.h>
-	<stdio.h>
 	<time.h>
 	<math.h>
 	"rotas.h"

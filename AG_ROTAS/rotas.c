@@ -1,11 +1,10 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <time.h>
 #include <math.h>
 #include "rotas.h"
 
-#define POT 3
 /*
  * Variaveis Globais
  */
@@ -85,30 +84,7 @@ unsigned long long int dis(posicao * inicio, posicao * atual)
                     i_geraativa, inicio->dado, inicio->linha, inicio->col,
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
-    return pow(lin + col, 2);
-}
-
-
-unsigned int stop(int j)
-{
-    int k;
-    for(k = 0; k != 0 && m_i_pop[i_geraativa][j][k]->dado != final.dado; k++){
-        if(k == 0){
-            if(dis(&inicio, m_i_pop[i_geraativa][j][k]) != 1)
-                return;
-        }
-        else{
-            if(dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]) != 1)
-                return;
-        }
-    }
-
-    if(k > 0){
-        printf("encontramos algo\n");
-        print_cromo(j, i_geraativa);
-        return 0;
-    }
-    else return m_f_popaval[i_geraativa][j] / 12;
+    return pow((lin + col) * 10, 2); // antes tava mandando pow 2
 }
 
 void avaliapop(void) {
@@ -118,7 +94,29 @@ void avaliapop(void) {
     for(j = 0; j < TAMPOP; j++) {
          for(k = 0;  k < TAMCROMO; k++){
             posicao * pos = m_i_pop[i_geraativa][j][k]; //cromo-init
-            if(k == 0){
+
+            if(k == 0) {
+                peso = 0;//pow(dis(&inicio, m_i_pop[i_geraativa][j][0]), 2); //atribui nota
+                m_f_popaval[i_geraativa][j] = peso;
+            }
+            else {
+                peso = pow(dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]), 1);
+                //dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k])
+                //peso += dis(&final,  m_i_pop[i_geraativa][j][k]); //atribui peso do final.
+                //peso += dis(&inicio,  m_i_pop[i_geraativa][j][k]); //atribui peso do final.
+                m_f_popaval[i_geraativa][j] += peso;
+            }
+
+            if (k != 0 && pos->dado == final.dado) {
+                peso = k;
+                //m_f_popaval[i_geraativa][j] += peso;
+                //m_f_popaval[i_geraativa][j] += pow(reavalia2(k, j), 1);
+                m_f_popaval[i_geraativa][j] += reavalia(k, j);
+                //m_f_popaval[i_geraativa][j] += k;
+                break;
+            }
+
+            /*if(k == 0){
                 peso = dis(&inicio, m_i_pop[i_geraativa][j][0]); //atribui nota
                 m_f_popaval[i_geraativa][j] = peso;
                 //m_f_popaval[i_geraativa][j] += 0;
@@ -130,15 +128,18 @@ void avaliapop(void) {
                 m_f_popaval[i_geraativa][j] += peso;
                 //m_f_popaval[i_geraativa][j] += peso;
             }
-                /*Para reavaliacoes*/
-             if(k != 0 && pos->dado == final.dado) {
+                //Para reavaliacoes
+            if(k != 0 && pos->dado == final.dado) {
                 int k1;
-                unsigned long long int peso_ = 0;
+                unsigned long long int peso_ = dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);
+                //for (i = 0; i < k; i++) {
+
+                //}
+                m_f_popaval[i_geraativa][j] += peso_;
                 m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 2);
                //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 2) - m_f_popaval[i_geraativa][j], 2)), 2);
-                //break;
-            }
-             m_f_popaval[i_geraativa][j] += stop(j);
+                break;
+            }*/
 
         }
         //m_f_popaval[i_geraativa][j] += pow(reavalia_final(j, TAMCROMO), 2);
@@ -165,11 +166,28 @@ unsigned long long int reavalia(int _final, int j)
 {
     unsigned long long int peso = 0;
     int k;
-    peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j]) / 12 : peso;
-    return peso * 2;
+    return peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j]) * 100 : peso;
     for(k = 0; k < _final; k++){
-        if(m_i_pop[i_geraativa][j][k + 1]->col > m_i_pop[i_geraativa][j][k]->col)
-            peso += m_f_popaval[i_geraativa][j] / 12;
+        //if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) != 1)
+            peso += pow(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]), 2);
+            //peso += rand() % m_f_popaval[i_geraativa][j] + 1; // go do
+    }
+    return peso;
+}
+
+unsigned long long int reavalia2(int _final, int j)
+{
+    unsigned long long int peso = 0;
+    int k;
+    for(k = 0; k < _final; k++){
+        if (k < (k / 2)) {
+            peso += dis(m_i_pop[i_geraativa][j][k], &inicio);
+            peso += dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][_final]) / 5;
+        }
+        else {
+            peso += dis(m_i_pop[i_geraativa][j][k], &inicio) / 5;
+            peso += dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][_final]);
+        }
     }
     return peso;
 }
@@ -244,7 +262,7 @@ void teste_roleta()
            posicao * pos = m_i_pop[i_geraativa][j][k];
             printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
         }
-        printf("porc= %g, lim_inf= %g, lim_sup= %g\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
+        printf("porc= %lf, lim_inf= %lf, lim_sup= %lf\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
     }
 }
 
@@ -296,8 +314,6 @@ void print_cromo(int j, int i)
     int k;
     for(k = 0; k < TAMCROMO; k++)
         printf("C.%d.%d dado= %d\n", j + 1, k + 1, m_i_pop[i][j][k]->dado);
-
-    exit(256);
 }
 
 void reproduzpop(void) {

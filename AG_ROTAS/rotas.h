@@ -5,12 +5,12 @@
 
 #define TRUE 1
 #define FALSE 0
-#define QTGERA 3000
+#define QTGERA 1000
 #define TAMPOP 60
 #define TAMCROMO 30
-#define TAXASEL 1 //0.80
+#define TAXASEL 0.80
 #define TAXACRUZ 1
-#define TAXAMUTA 0.80
+#define TAXAMUTA 0.05
 
 #define LIN 5
 #define COL 6
