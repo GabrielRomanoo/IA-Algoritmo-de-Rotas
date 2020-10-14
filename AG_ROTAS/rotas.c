@@ -84,7 +84,7 @@ unsigned long long int dis(posicao * inicio, posicao * atual)
                     i_geraativa, inicio->dado, inicio->linha, inicio->col,
                     atual->dado, atual->linha, atual->col, lin + col);
                     //exit(111);*/
-    return pow((lin + col) * 10, 2); // antes tava mandando pow 2
+    return pow((lin + col) * 20, 2); // antes tava mandando pow 2
 }
 
 void avaliapop(void) {
@@ -152,6 +152,8 @@ void avaliapop(void) {
 
     ordenar_cromo(m_f_popaval);
     //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
+    //exit(255);
+
     roleta(soma_pesos);
     //teste_roleta();
     //exit(255);
@@ -211,19 +213,12 @@ void ordenar_cromo(unsigned long long int v[][TAMPOP])
 
 void bests_cromo()
 {
-    int i, j, i_g, j_c, best = m_f_popaval[0][0];
-    for(i = 0; i < QTGERA; i++){
-        for(j = 0; j < TAMCROMO; j++){
-            printf("G.%d.%d Nota= %d\n", i + 1, j + 1, m_f_popaval[i][j]);
-            if(m_f_popaval[i][j] < best) {
-                    best = m_f_popaval[i][j];
-                    i_g = i;
-                    j_c = j;
-            }
-        }
-        printf("\n");
-    }
-    printf("\nBest Cromo Nota= %d, nota[%d][%d]\n", best, i_g, j_c);
+    int j;
+    pos_cromo(indice_notas[TAMPOP - 1], i_geraativa, &j);
+    printf("\ni = %d, j = %d\n", i_geraativa, j);
+    //print_cromo(j, i_geraativa);
+    //exit(111);
+
 }
 
 void pos_cromo(posicao** cromo, int g, int * j)
@@ -550,13 +545,18 @@ void mostrapop(void) {
 
 void print_arq_rota()
 {
+
     int k;
+    int j;
     FILE *ptr_arq;
     ptr_arq = fopen("result_rota.txt","w");
     fprintf(ptr_arq , "%s", "v\n");
-    for(k = 0; m_i_pop[QTGERA - 1][TAMPOP - 1][k]->dado != final.dado; k++) {
-        fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][TAMPOP - 1][k]->dado);
+    pos_cromo(indice_notas[TAMCROMO - 1], i_geraativa, &j);
+    for(k = 0; m_i_pop[QTGERA - 1][j][k]->dado != final.dado; k++) {
+        fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][j][k]->dado);
     }
-    fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][TAMPOP - 1][k]->dado);
+    fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][j][k]->dado);
+    fprintf(ptr_arq , "%s", "v\n");
     fclose(ptr_arq);
+
 }
