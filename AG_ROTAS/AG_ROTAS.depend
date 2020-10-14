@@ -37,12 +37,12 @@
 	<time.h>
 	"rotas.h"
 
-1602632444 c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.h
+1602643905 c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.h
 	<stdbool.h>
 
 1600879579 D
 
-1602632015 source:c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.c
+1602643595 source:c:\github\trb2-ia\trb2-ia-ag-rotas\ag_rotas\rotas.c
 	<stdio.h>
 	<stdlib.h>
 	<stdbool.h>

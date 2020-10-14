@@ -108,7 +108,7 @@ void avaliapop(void) {
             }
 
             if (k != 0 && pos->dado == final.dado) {
-                peso = k;
+                peso += k;
                 //m_f_popaval[i_geraativa][j] += peso;
                 //m_f_popaval[i_geraativa][j] += pow(reavalia2(k, j), 1);
                 m_f_popaval[i_geraativa][j] += reavalia(k, j);
