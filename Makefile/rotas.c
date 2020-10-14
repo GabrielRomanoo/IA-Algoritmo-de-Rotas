@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
@@ -11,13 +12,13 @@ faixas_roleta fx_roleta[TAMPOP];
 posicao inicio = {4, 0, 25};
 posicao final = {1, 5, 12};
 int i_geraativa = 0; //geracao atual
-posicao * m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromossomos
-int m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
-posicao ** indice_notas[TAMCROMO];
+posicao* m_i_pop[QTGERA][TAMPOP][TAMCROMO + 1] = {0, 0, 0}; //matriz de cromossomo
+unsigned long long int m_f_popaval[QTGERA][TAMPOP]; //matriz de avalia��es
+posicao** indice_notas[TAMCROMO];
 float m_f_estataval[QTGERA][3]; //matriz de estatisticas: fitness m�nimo, m�ximo, m�dio
-posicao ** i_pai1; //primeiro pai selecionado
-posicao ** i_pai2; //segundo pai selecionado
-double soma_pesos = 0;
+posicao** i_pai1; //primeiro pai selecionado
+posicao** i_pai2; //segundo pai selecionado
+unsigned long long int soma_pesos = 0;
 posicao matriz[LIN][COL];
 
 void init_mapa()
@@ -72,61 +73,129 @@ void embaralha_alelos(int i)
     }
 }
 
+
+unsigned long long int dis(posicao * inicio, posicao * atual)
+{
+
+
+    unsigned int lin = sqrt(pow((inicio->linha - atual->linha), 2));
+    unsigned int col = sqrt(pow((inicio->col - atual->col), 2));
+     /*printf("\nG.%d, (p1.dado= %d, %d,%d) , (p2.dado= %d, %d.%d) .TT= %d\n",
+                    i_geraativa, inicio->dado, inicio->linha, inicio->col,
+                    atual->dado, atual->linha, atual->col, lin + col);
+                    //exit(111);*/
+    return pow((lin + col) * 20, 2); // antes tava mandando pow 2
+}
+
 void avaliapop(void) {
-    int j, k, i = 0, seq = 0, peso = 0, pontos = 0;
+    int j, k;
+    unsigned long long int peso = 0;
     soma_pesos = 0;
     for(j = 0; j < TAMPOP; j++) {
-        posicao * pos = m_i_pop[i_geraativa][j][0]; //cromo-init
-        for(k = 0;  k < TAMCROMO; k++){
-            if(k == 0){
-                peso = dis(&inicio, pos); //atribui nota
-                m_f_popaval[i_geraativa][j] += peso;
+         for(k = 0;  k < TAMCROMO; k++){
+            posicao * pos = m_i_pop[i_geraativa][j][k]; //cromo-init
+
+            if(k == 0) {
+                peso = 0;//pow(dis(&inicio, m_i_pop[i_geraativa][j][0]), 2); //atribui nota
+                m_f_popaval[i_geraativa][j] = peso;
             }
             else {
-                peso = dis(&final, pos); //atribui peso do final.
-                peso += dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);//funcao de custo
+                peso = pow(dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]), 1);
+                //dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k])
+                //peso += dis(&final,  m_i_pop[i_geraativa][j][k]); //atribui peso do final.
+                //peso += dis(&inicio,  m_i_pop[i_geraativa][j][k]); //atribui peso do final.
                 m_f_popaval[i_geraativa][j] += peso;
             }
-            //printf("peso= %d\n", peso);
-        }
-        indice_notas[j] = &(m_i_pop[i_geraativa][j][0]); //guarda o endereco do cromosso
-       // printf("/nMaior dado no Cromo %d eh : %d\n", j, normaliza_pesos(j));
-        //exit(1);
-        //m_f_popaval[i_geraativa][j] -= pontos + 0.01; //tira mais peso
-        soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
-       //printf("[Cromo %d, dado= %d] peso= %d\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
 
+            if (k != 0 && pos->dado == final.dado) {
+                peso += k;
+                //m_f_popaval[i_geraativa][j] += peso;
+                //m_f_popaval[i_geraativa][j] += pow(reavalia2(k, j), 1);
+                m_f_popaval[i_geraativa][j] += reavalia(k, j);
+                //m_f_popaval[i_geraativa][j] += k;
+                break;
+            }
+
+            /*if(k == 0){
+                peso = dis(&inicio, m_i_pop[i_geraativa][j][0]); //atribui nota
+                m_f_popaval[i_geraativa][j] = peso;
+                //m_f_popaval[i_geraativa][j] += 0;
+            }
+            else {
+                peso = dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);//funcao de custo
+                //peso += dis(&final, pos); //atribui peso do final.
+                //peso += dis(&inicio, pos); //atribui peso do final.
+                m_f_popaval[i_geraativa][j] += peso;
+                //m_f_popaval[i_geraativa][j] += peso;
+            }
+                //Para reavaliacoes
+            if(k != 0 && pos->dado == final.dado) {
+                int k1;
+                unsigned long long int peso_ = dis(m_i_pop[i_geraativa][j][k - 1], m_i_pop[i_geraativa][j][k]);
+                //for (i = 0; i < k; i++) {
+
+                //}
+                m_f_popaval[i_geraativa][j] += peso_;
+                m_f_popaval[i_geraativa][j] += pow(reavalia(k, j), 2);
+               //m_f_popaval[i_geraativa][j] += pow(sqrt(pow(pow(k, 2) - m_f_popaval[i_geraativa][j], 2)), 2);
+                break;
+            }*/
+
+        }
+        //m_f_popaval[i_geraativa][j] += pow(reavalia_final(j, TAMCROMO), 2);
+        indice_notas[j] = &(m_i_pop[i_geraativa][j][0]); //guarda o endereco do cromosso
+        soma_pesos += m_f_popaval[i_geraativa][j]; //conteudo da nota
+        //printf("[Cromo %d, dado= %d] peso= %llu\n\n", j + 1, (*indice_notas[j])->dado, m_f_popaval[i_geraativa][j]);
     }
 
-    printf("\npesos totais %f\n\n", soma_pesos);
+    //printf("\npesos totais %llu\n", soma_pesos);
 
     ordenar_cromo(m_f_popaval);
     //teste_gera(soma_pesos); //debug para ver se funciona ordenacao.
+    //exit(255);
+
     roleta(soma_pesos);
     //teste_roleta();
+    //exit(255);
+
     //reavalia();
     //teste_gera(soma_pesos);
+
 }
 
-void reavalia()
+
+unsigned long long int reavalia(int _final, int j)
 {
-    int j, k, k1, ponto = 0;
-    for(j = 0; j < TAMPOP; j++) {
-        for(k = 0; k < TAMCROMO; k++){
-            if(m_i_pop[i_geraativa][j][k]->dado == 1)ponto++;
-            if(ponto < 8) {
-                printf("\nBOM\n\n");
-                for(k1 = 0; k1 < TAMCROMO; k1++)
-                    printf("G.%d, %d.%d [%d]\n",i_geraativa + 1, j + 1, k1 + 1, m_i_pop[i_geraativa][j][k1]->dado);
-                exit(444);
-            }
-            ponto = 0;
+    unsigned long long int peso = 0;
+    int k;
+    return peso = (m_i_pop[i_geraativa][j][0]->dado != inicio.dado) ? (m_f_popaval[i_geraativa][j]) * 100 : peso;
+    for(k = 0; k < _final; k++){
+        //if(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]) != 1)
+            peso += pow(dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][k + 1]), 2);
+            //peso += rand() % m_f_popaval[i_geraativa][j] + 1; // go do
+    }
+    return peso;
+}
+
+unsigned long long int reavalia2(int _final, int j)
+{
+    unsigned long long int peso = 0;
+    int k;
+    for(k = 0; k < _final; k++){
+        if (k < (k / 2)) {
+            peso += dis(m_i_pop[i_geraativa][j][k], &inicio);
+            peso += dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][_final]) / 5;
+        }
+        else {
+            peso += dis(m_i_pop[i_geraativa][j][k], &inicio) / 5;
+            peso += dis(m_i_pop[i_geraativa][j][k], m_i_pop[i_geraativa][j][_final]);
         }
     }
+    return peso;
 }
 
 
-void ordenar_cromo(int v[][TAMPOP])
+void ordenar_cromo(unsigned long long int v[][TAMPOP])
 {
     int i, j, x;
     posicao * p;
@@ -140,6 +209,16 @@ void ordenar_cromo(int v[][TAMPOP])
 		v[i_geraativa][i + 1] = x;
 		indice_notas[i + 1] = p;
 	}
+}
+
+void bests_cromo()
+{
+    int j;
+    pos_cromo(indice_notas[TAMPOP - 1], i_geraativa, &j);
+    printf("\ni = %d, j = %d\n", i_geraativa, j);
+    //print_cromo(j, i_geraativa);
+    //exit(111);
+
 }
 
 void pos_cromo(posicao** cromo, int g, int * j)
@@ -158,14 +237,13 @@ void pos_cromo(posicao** cromo, int g, int * j)
 
 void roleta()
 {
-    int i;
-    for(i = 0; i < TAMPOP; i++) {
-        fx_roleta[i].porc = m_f_popaval[i_geraativa][i] / soma_pesos;
-        fx_roleta[i].inf = i == 0 ? 0 : fx_roleta[i - 1].sup ;
-        fx_roleta[i].sup = fx_roleta[i].inf + (fx_roleta[i].porc * soma_pesos);
-        fx_roleta[i].p = indice_notas[(TAMPOP - 1) - i];
+    int k;
+    for(k = 0; k < TAMPOP; k++) {
+        fx_roleta[k].porc = (double)m_f_popaval[i_geraativa][k] / soma_pesos;
+        fx_roleta[k].inf = k == 0 ? 0 : fx_roleta[k - 1].sup ;
+        fx_roleta[k].sup = fx_roleta[k].inf + (fx_roleta[k].porc);
+        fx_roleta[k].p = indice_notas[(TAMPOP - 1) - k];
         //printf("dado=[%d]\n", fx_roleta[i].p->dado);
-
     }
 }
 
@@ -179,7 +257,7 @@ void teste_roleta()
            posicao * pos = m_i_pop[i_geraativa][j][k];
             printf("%d.%d [%d]\n", j + 1, k + 1, pos->dado);
         }
-        printf("porc= %f, lim_inf= %f, lim_sup= %f\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
+        printf("porc= %lf, lim_inf= %lf, lim_sup= %lf\n\n", fx_roleta[i].porc, fx_roleta[i].inf, fx_roleta[i].sup);
     }
 }
 
@@ -187,7 +265,7 @@ void teste_roleta()
 void teste_gera()
 {
     printf("\n\n***TESTA COMO FICOU***\n\n");
-    printf("\ntotal lf = %f\n", soma_pesos);
+    printf("\ntotal lf = %llu\n", soma_pesos);
     int j, k, i;
     for(j = 0; j < TAMPOP; j++) {
         pos_cromo(indice_notas[j], i_geraativa, &i);
@@ -195,7 +273,7 @@ void teste_gera()
             posicao * pos = m_i_pop[i_geraativa][i][k];
             printf("%d.%d [%d]\n", i + 1, k + 1, pos->dado);
         }
-        printf("Total= %d, pct = %f\n\n", m_f_popaval[i_geraativa][j], m_f_popaval[i_geraativa][j] / soma_pesos);
+        printf("Total= %d, pct = %g\n\n", m_f_popaval[i_geraativa][j], (double)m_f_popaval[i_geraativa][j] / soma_pesos);
     }
 }
 
@@ -204,23 +282,10 @@ void debug(posicao p1, posicao p2)
     printf("[%d(%d, %d)], [%d(%d, %d)], dist = %d", p1.dado, p1.linha, p1.col, p2.dado, p2.linha, p2.col, dis(&p1, &p2));
 }
 
-int dis(posicao * inicio, posicao * atual)
-{
-
-    int lin = (inicio->linha - atual->linha) * (inicio->linha - atual->linha);
-    int col = (inicio->col - atual->col) * (inicio->col - atual->col);
-     /*printf("\nG.%d, (p1.dado= %d, %d,%d) , (p2.dado= %d, %d.%d) .TT= %d\n",
-                    i_geraativa, inicio->dado, inicio->linha, inicio->col,
-                    atual->dado, atual->linha, atual->col, lin + col);
-                    //exit(111);*/
-    if((inicio->linha == atual->linha) && (inicio->col == atual->col))return 16;
-    return lin + col;
-}
-
 posicao** selecionapais()
 {
-    int n = (int)rand() % ((int)soma_pesos + 1);
     int j, k;
+    double n = rand() / (double)RAND_MAX;
     for(int i = 0; i < TAMPOP; i++) {
         if(n > fx_roleta[i].inf && n <= fx_roleta[i].sup) {
             #ifdef INSTALL_DEBUG
@@ -252,7 +317,7 @@ void reproduzpop(void) {
     i_geraativa += 1;
     posicao** i_pai1_;
     posicao** i_pai2_;
-    //ilitismo();
+    elitismo();
 
 	while(_i_novapop < TAMPOP) {
         do
@@ -283,8 +348,8 @@ void reproduzpop(void) {
             }
         //debug_pais(i_pai1, i_pai2);// go to pegar bug
         }while(!cruzapais(i_pai1_, i_pai2_, &j1, &j2));
-		//mutapais(j1);
-		//mutapais(j2);
+		mutapais(_i_novapop);
+		mutapais(_i_novapop + 1);
 		//debug_muta(i_pai1);
 		_i_novapop+=2;
 	}
@@ -451,9 +516,11 @@ void debug_muta(posicao** p1)
 
 void mutapais(int j) {
     if(((double)rand() / RAND_MAX) <= TAXAMUTA) {
-	    int num = 1 + (rand() % 15);
-	    int pt_mt = rand() % TAMCROMO;
-        m_i_pop[i_geraativa][j][pt_mt]->dado = num;
+	    int pt_mt_1 = rand() % TAMCROMO;
+	    int pt_mt_2 = rand() % TAMCROMO;
+	    posicao* aux = m_i_pop[i_geraativa][j][pt_mt_1];
+        m_i_pop[i_geraativa][j][pt_mt_1] = m_i_pop[i_geraativa][j][pt_mt_2];
+        m_i_pop[i_geraativa][j][pt_mt_2] = aux;
 	}
 }
 
@@ -476,3 +543,20 @@ void mostrapop(void) {
 	return;
 }
 
+void print_arq_rota()
+{
+
+    int k;
+    int j;
+    FILE *ptr_arq;
+    ptr_arq = fopen("result_rota.txt","w");
+    fprintf(ptr_arq , "%s", "v\n");
+    pos_cromo(indice_notas[TAMCROMO - 1], i_geraativa, &j);
+    for(k = 0; m_i_pop[QTGERA - 1][j][k]->dado != final.dado; k++) {
+        fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][j][k]->dado);
+    }
+    fprintf(ptr_arq , "%d\n", m_i_pop[QTGERA - 1][j][k]->dado);
+    fprintf(ptr_arq , "%s", "v\n");
+    fclose(ptr_arq);
+
+}
