@@ -5,12 +5,12 @@
 
 #define TRUE 1
 #define FALSE 0
-#define QTGERA 1000
+#define QTGERA 20000
 #define TAMPOP 60
 #define TAMCROMO 30
 #define TAXASEL 1
 #define TAXACRUZ 1
-#define TAXAMUTA 0.85
+#define TAXAMUTA 0.80
 
 #define LIN 5
 #define COL 6
@@ -29,18 +29,6 @@ typedef struct {
     posicao** p;
 }faixas_roleta;
 
-#ifdef INSTALL_DEBUG
-void print_mapa();
-void teste_roleta();
-void teste_gera();
-void debug(posicao p1, posicao p2);
-void print_cromo(int j, int i);
-void debug_pais(posicao** p1, posicao** p2);
-void teste_unit_cromo(posicao** p1, posicao** p2, posicao** f1, posicao** f2, int corte);
-void debug_cruzamento(int j, int l);
-void debug_muta(posicao** p1);
-#endif // INSTALL_DEBUG
-void init_var_pt_flt();
 void init_mapa();
 void criapop(void);
 void embaralha_alelos(int i);
@@ -59,6 +47,5 @@ int checaparada(void);
 void mostrapop(void);
 void motrar_nota_geracao();
 unsigned long long int reavalia(int _final, int j);
-unsigned long long int vizinhanca(int lin, int col, int j, int k);
 
 #endif

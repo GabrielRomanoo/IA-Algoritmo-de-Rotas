@@ -33,7 +33,10 @@ srand((unsigned long long)time(NULL) );
 		avaliapop();
 		reproduzpop();
 		//mostrapop();
-		if(checaparada()) break;
+		if(checaparada()){
+            avaliapop();
+            break;
+		};
 	}
 	mostrapop();
     //bests_cromo();
